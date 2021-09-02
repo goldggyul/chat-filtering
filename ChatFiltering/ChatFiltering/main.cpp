@@ -13,6 +13,11 @@ public:
 		AddFilter("강아지"); // 기본 필터링 단어 추가
 	}
 
+	~Chat()
+	{
+		delete filters_;
+	}
+
 	const std::vector<std::string>& get_filters() { return *filters_; }
 	void AddFilter(std::string filter) { filters_->push_back(filter); }
 
