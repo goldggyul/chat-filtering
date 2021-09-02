@@ -59,22 +59,24 @@ std::string Chat::GetSpaceOutput(const std::string& input)
 				space_count[i] = space_count[i - 1];
 		}
 
-		std::string::size_type pos = output.find("강");
+		std::string filter_first_letter;
+		filter_first_letter.push_back(filter[0]); filter_first_letter.push_back(filter[1]);
+		std::string::size_type pos = output.find(filter_first_letter);
 		while (pos != std::string::npos)
 		{
 			if (pos == no_space_pos + space_count[pos])
 			{
-				output[pos] = '*';
-				output.erase(pos + 1, 1);
-				pos = output.find("아", pos + 1);
-				output[pos] = '*';
-				output.erase(pos + 1, 1);
-				pos = output.find("지", pos + 1);
-				output[pos] = '*';
-				output.erase(pos + 1, 1);
+				// 위치 찾음 -> 나머지 필터링하면 완료
+				for (int i = 0; i < filter.size(); i += 2)
+				{
+					output[pos] = '*';
+					output.erase(pos + 1, 1);
+					if (i + 2 < filter.size())
+						pos = output.find(filter[i + 2], pos + 1);
+				}
 				break;
 			}
-			pos = output.find("강", pos + 1);
+			pos = output.find(filter_first_letter, pos + 1);
 		}
 	}
 	return output;
@@ -82,12 +84,13 @@ std::string Chat::GetSpaceOutput(const std::string& input)
 
 std::string Chat::GetOutput(const std::string& input)
 {
-	std::string::size_type pos = input.find(get_filter());
+	const std::string& filter = get_filter();
+	std::string::size_type pos = input.find(filter);
 	std::string output = input;
 
 	if (pos != std::string::npos)
 	{
-		output.replace(pos, get_filter().size(), GetFilteredWord(get_filter()));
+		output.replace(pos, filter.size(), GetFilteredWord(filter));
 	}
 	else
 	{
