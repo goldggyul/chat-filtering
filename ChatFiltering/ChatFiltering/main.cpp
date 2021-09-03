@@ -80,6 +80,7 @@ void Chat::GetSpaceOutput(std::string& input)
 						pos = input.find(filter[(i+1)*2], pos + 1);
 					}
 					++erase_count;
+					break;
 				}
 				pos = input.find(filter[0], pos + 1);
 			}
