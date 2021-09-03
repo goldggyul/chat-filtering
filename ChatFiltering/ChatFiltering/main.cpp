@@ -30,22 +30,10 @@ public:
 int main()
 {
 	Chat chat;
-	// chat.AddFilter("고양이");
+	chat.AddFilter("고양이");
 	chat.Play();
 
 	return 0;
-}
-
-void Chat::FIlterOnce(std::string& input, std::string::size_type& pos, const std::string& filter)
-{
-	for (int i = 0; i < filter.size(); i += 2)
-	{
-		input[pos] = '*';
-		input.erase(pos + 1, 1);
-		if (i + 2 >= filter.size())
-			break;
-		pos = input.find(filter[i + 2], pos + 1);
-	}
 }
 
 void Chat::GetSpaceOutput(std::string& input)
@@ -53,7 +41,18 @@ void Chat::GetSpaceOutput(std::string& input)
 	for (int i = 0; i < filters_->size(); i++)
 	{
 		const std::string& filter = filters_->at(i);
+		int size = filter.size()/2;
 		std::string input_no_space = input;
+
+		// 공백 제거한 문자열이 아닌, 원래 문자열에서 위치 찾기 위해 공백 수 세기
+		std::vector<int> space_count(input.size(), 0);
+		for (int i = 1; i < input.size(); i++)
+		{
+			if (input[i - 1] == ' ')
+				space_count[i] = space_count[i - 1] + 1;
+			else
+				space_count[i] = space_count[i - 1];
+		}
 
 		// 공백 제거
 		std::string::iterator it = std::remove(input_no_space.begin(), input_no_space.end(), ' ');
@@ -61,45 +60,31 @@ void Chat::GetSpaceOutput(std::string& input)
 
 		// 공백 제거한 문자열에서 필터링할 단어 있는 지 확인
 		std::string::size_type no_space_pos = input_no_space.find(filter);
-
+	
+		int erase_count = 0;
 		// 필터링 필요한 경우
-		if (no_space_pos != std::string::npos)
+		while (no_space_pos != std::string::npos)
 		{
-			// 공백 제거한 문자열이 아닌, 원래 문자열에서 위치 찾기 위해 공백 수 세기
-			std::vector<int> space_count(input.size(), 0);
-			for (int i = 1; i < input.size(); i++)
-			{
-				if (input[i - 1] == ' ')
-					space_count[i] = space_count[i - 1] + 1;
-				else
-					space_count[i] = space_count[i - 1];
-			}
-
-			// 필터링 단어 첫번째 글자 기준으로 찾기
-			std::string filter_first_letter;
-
-			// 필터링 단어가 한글이므로 2바이트 필요
-			filter_first_letter.push_back(filter[0]);
-			filter_first_letter.push_back(filter[1]);
-			std::string::size_type pos = input.find(filter_first_letter);
+			std::string::size_type pos = input.find(filter[0]);
 			while (pos != std::string::npos)
 			{
-				if (pos == no_space_pos + space_count[pos])
+				if (pos == no_space_pos - (erase_count*size)+ space_count[pos])
 				{
-					FIlterOnce(input, pos, filter);
-					break;
+					for (int i = 0; i < size; i++)
+					{
+						input[pos] = '*';
+						input.erase(pos + 1, 1);
+						space_count.erase(space_count.begin() + pos + 1);
+						if (i == size-1)
+							break;
+						pos = input.find(filter[(i+1)*2], pos + 1);
+					}
+					++erase_count;
 				}
-				pos = input.find(filter_first_letter, pos + 1);
+				pos = input.find(filter[0], pos + 1);
 			}
+			no_space_pos = input_no_space.find(filter, no_space_pos+1);
 		}
-		else
-		{
-			// 더 이상 필터링 할 단어 없음
-			continue;
-		}
-		// 나머지 단어 처리
-		GetSpaceOutput(input);
-		continue;
 	}
 }
 
@@ -108,18 +93,17 @@ void Chat::GetOutput(std::string& input)
 	for (int i = 0; i < filters_->size(); i++)
 	{
 		const std::string& filter = filters_->at(i);
+		int size = filter.size();
 		std::string::size_type pos = input.find(filter);
-		if (pos != std::string::npos)
+		while (pos != std::string::npos)
 		{
-			FIlterOnce(input, pos, filter);
+			for (int i = 0; i < size/2; i++)
+			{
+				input[pos+i] = '*';
+				input.erase(pos+i + 1, 1);
+			}
+			pos = input.find(filter, pos+1);
 		}
-		else
-		{
-			continue;
-		}
-		// 나머지 단어 처리
-		GetOutput(input);
-		continue;
 	}
 }
 
