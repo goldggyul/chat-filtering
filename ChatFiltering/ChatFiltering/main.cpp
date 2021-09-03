@@ -116,8 +116,6 @@ void Chat::GetOutput(std::string& input)
 		}
 		else
 		{
-			// 공백 포함된 상태의 필터링 단어 있는 지 확인
-			GetSpaceOutput(input);
 			continue;
 		}
 		// 나머지 단어 처리
@@ -139,7 +137,8 @@ void Chat::Play()
 			return;
 
 		std::string output = input;
-		GetOutput(output);
+		//GetOutput(output);
+		GetSpaceOutput(output);
 		std::cout << "출력: " << output << std::endl;
 	}
 }
