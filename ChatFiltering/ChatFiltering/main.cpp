@@ -21,7 +21,7 @@ public:
 	const std::vector<std::string>& get_filters() { return *filters_; }
 	void AddFilter(std::string filter) { filters_->push_back(filter); }
 
-	void EraseLetter(std::string& input, std::string::size_type& pos, const std::string& filter);
+	void FIlterOnce(std::string& input, std::string::size_type& pos, const std::string& filter);
 	void GetSpaceOutput(std::string& input);
 	void GetOutput(std::string& input);
 	void Play();
@@ -30,15 +30,14 @@ public:
 int main()
 {
 	Chat chat;
-	chat.AddFilter("고양이");
+	// chat.AddFilter("고양이");
 	chat.Play();
 
 	return 0;
 }
 
-void Chat::EraseLetter(std::string& input, std::string::size_type& pos, const std::string& filter)
+void Chat::FIlterOnce(std::string& input, std::string::size_type& pos, const std::string& filter)
 {
-	// 위치 찾음 -> 나머지 필터링하면 완료
 	for (int i = 0; i < filter.size(); i += 2)
 	{
 		input[pos] = '*';
@@ -87,7 +86,7 @@ void Chat::GetSpaceOutput(std::string& input)
 			{
 				if (pos == no_space_pos + space_count[pos])
 				{
-					EraseLetter(input, pos, filter);
+					FIlterOnce(input, pos, filter);
 					break;
 				}
 				pos = input.find(filter_first_letter, pos + 1);
@@ -112,7 +111,7 @@ void Chat::GetOutput(std::string& input)
 		std::string::size_type pos = input.find(filter);
 		if (pos != std::string::npos)
 		{
-			EraseLetter(input, pos, filter);
+			FIlterOnce(input, pos, filter);
 		}
 		else
 		{
