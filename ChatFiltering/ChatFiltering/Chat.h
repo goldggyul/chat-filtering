@@ -2,6 +2,7 @@
 #include <iostream>
 #include<string>
 #include<vector>
+#include<regex>
 
 const int MIN_ASCII = 0;
 const int MAX_ASCII = 127;
@@ -34,6 +35,5 @@ public:
 
 	void Play();
 	std::string Filter(std::string& original_input);
-	std::string RemoveReplacementDuplication(const std::string& original_input, const std::string& filtered_input);
 };
 
