@@ -45,7 +45,7 @@ public:
 	std::string Filter(const std::string& original_input);
 	std::string GetReplacementWord(const std::string& filter);
 	std::string GetExpression(const std::string& mask);
-	bool IsLettersBetweenFilterSame(const std::smatch& m);
+	bool IsEveryFilteredLetterSame(const std::smatch& m);
 };
 
 int main()
@@ -96,7 +96,7 @@ std::string Chat::Filter(const std::string& original_input)
 		while (regex_search(input, m, std::regex(expression)))
 		{
 			search_output.append(m.prefix());
-			if (IsLettersBetweenFilterSame(m))
+			if (IsEveryFilteredLetterSame(m))
 				search_output.append(replacement_word);
 			else
 				search_output.append(m.str());
@@ -139,7 +139,7 @@ std::string Chat::GetExpression(const std::string& filter)
 	return expression;
 }
 
-bool Chat::IsLettersBetweenFilterSame(const std::smatch& m)
+bool Chat::IsEveryFilteredLetterSame(const std::smatch& m)
 {
 	std::string match_result;
 	for (int i = 1; i < m.size(); i++)
