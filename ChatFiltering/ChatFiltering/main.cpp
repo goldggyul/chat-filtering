@@ -45,6 +45,7 @@ public:
 	std::string Filter(const std::string& original_input);
 	std::string GetReplacementWord(const std::string& filter);
 	std::string GetExpression(const std::string& mask);
+	std::string GetMask();
 	bool IsEveryFilteredLetterSame(const std::smatch& m);
 };
 
@@ -121,11 +122,7 @@ std::string Chat::GetReplacementWord(const std::string& filter)
 
 std::string Chat::GetExpression(const std::string& filter)
 {
-	std::string mask;
-	mask.append("([");
-	mask.append(letters_to_ignore_);
-	mask.append("]*)");
-
+	std::string mask=GetMask();
 	std::string expression;
 	for (int f = 0; f < filter.size(); f++)
 	{
@@ -137,6 +134,15 @@ std::string Chat::GetExpression(const std::string& filter)
 		expression.append(mask);
 	}
 	return expression;
+}
+
+std::string Chat::GetMask()
+{
+	std::string mask;
+	mask.append("([");
+	mask.append(letters_to_ignore_);
+	mask.append("]*)");
+	return mask;
 }
 
 bool Chat::IsEveryFilteredLetterSame(const std::smatch& m)
