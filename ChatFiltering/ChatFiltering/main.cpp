@@ -5,17 +5,18 @@
 
 const int MIN_ASCII = 0;
 const int MAX_ASCII = 127;
-const char REPLACEMENT = '*';
+const char REPLACEMENT_LETTER = '*';
 
 class Chat
 {
 private:
 	std::vector<std::string>* filters_;
-	std::vector<char>* letters_to_ignore_;
+	std::string letters_to_ignore_;
 
 public:
-	Chat() :filters_(new std::vector<std::string>), letters_to_ignore_(new std::vector<char>)
+	Chat() :filters_(new std::vector<std::string>)
 	{
+		letters_to_ignore_ = "";
 		// #1
 		AddFilter("강아지");
 	}
@@ -23,7 +24,6 @@ public:
 	~Chat()
 	{
 		delete filters_;
-		delete letters_to_ignore_;
 	}
 
 	void AddFilter(std::string filter)
@@ -33,10 +33,7 @@ public:
 
 	void AddLettersToIgnore(std::string letters_to_ignore)
 	{
-		for (int i = 0; i < letters_to_ignore.size(); i++)
-		{
-			letters_to_ignore_->push_back(letters_to_ignore[i]);
-		}
+		letters_to_ignore_.append(letters_to_ignore);
 	}
 
 	bool IsAscii(const char& letter)
@@ -45,9 +42,10 @@ public:
 	}
 
 	void Play();
-	std::string Filter(std::string& original_input);
+	std::string Filter(const std::string& original_input);
 	std::string GetReplacementWord(const std::string& filter);
-	std::string GetExpression(const std::string& filter, const std::string& mask);
+	std::string GetExpression(const std::string& mask);
+	bool IsLettersBetweenFilterSame(const std::smatch& m);
 };
 
 int main()
@@ -57,9 +55,10 @@ int main()
 	// #2
 	chat.AddFilter("puppy");
 	chat.AddFilter("dog");
+	chat.AddLettersToIgnore("\\s");
 
-	// #2.5 !@#$%(^)&*(\s)
-	chat.AddLettersToIgnore("!@#$%\\^&*\\s");
+	// #2.5: !@#$%(^)&*(\s)
+	chat.AddLettersToIgnore("!@#$%\^&*\\s");
 
 	chat.Play();
 
@@ -83,30 +82,29 @@ void Chat::Play()
 	}
 }
 
-std::string Chat::Filter(std::string& original_input)
+std::string Chat::Filter(const std::string& original_input)
 {
-	std::string filtered_input = original_input;
+	std::string input = original_input;
 	for (int i = 0; i < filters_->size(); i++)
 	{
 		const std::string& filter = filters_->at(i);
 
 		std::string replacement_word = GetReplacementWord(filter);
-		
-		for (int l = 0; l < letters_to_ignore_->size(); l++)
+		std::string expression = GetExpression(filter);
+		std::smatch m;
+		std::string search_output="";
+		while (regex_search(input, m, std::regex(expression)))
 		{
-			std::string mask;
-			mask.append("[");
-			mask.push_back(letters_to_ignore_->at(l));
-			if (letters_to_ignore_->at(l) == '\\')
-				mask.push_back(letters_to_ignore_->at(++l));
-			mask.append("]*");
-
-			std::string expression = GetExpression(filter, mask);
-
-			original_input = regex_replace(original_input, std::regex(expression), replacement_word);
+			search_output.append(m.prefix());
+			if (IsLettersBetweenFilterSame(m))
+				search_output.append(replacement_word);
+			else
+				search_output.append(m.str());
+			input = m.suffix();
 		}
+		input = search_output.append(input);
 	}
-	return original_input;
+	return input;
 }
 
 std::string Chat::GetReplacementWord(const std::string& filter)
@@ -114,15 +112,20 @@ std::string Chat::GetReplacementWord(const std::string& filter)
 	std::string replacement_word;
 	for (int f = 0; f < filter.size(); f++)
 	{
-		replacement_word.push_back(REPLACEMENT);
+		replacement_word.push_back(REPLACEMENT_LETTER);
 		if (!IsAscii(filter[f]))
 			f++;
 	}
 	return replacement_word;
 }
 
-std::string Chat::GetExpression(const std::string& filter, const std::string& mask)
+std::string Chat::GetExpression(const std::string& filter)
 {
+	std::string mask;
+	mask.append("([");
+	mask.append(letters_to_ignore_);
+	mask.append("]*)");
+
 	std::string expression;
 	for (int f = 0; f < filter.size(); f++)
 	{
@@ -134,4 +137,22 @@ std::string Chat::GetExpression(const std::string& filter, const std::string& ma
 		expression.append(mask);
 	}
 	return expression;
+}
+
+bool Chat::IsLettersBetweenFilterSame(const std::smatch& m)
+{
+	std::string match_result;
+	for (int i = 1; i < m.size(); i++)
+	{
+		match_result.append(m[i].str());
+	}
+
+	for (int i = 1; i < match_result.size(); i++)
+	{
+		if (match_result[i] != match_result[i - 1])
+		{
+			return false;
+		}
+	}
+	return true;
 }
