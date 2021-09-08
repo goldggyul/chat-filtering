@@ -11,20 +11,32 @@ class Chat
 {
 private:
 	std::vector<std::string>* filters_;
+	std::vector<char>* letters_to_ignore_;
+
 public:
-	Chat() :filters_(new std::vector<std::string>)
+	Chat() :filters_(new std::vector<std::string>), letters_to_ignore_(new std::vector<char>)
 	{
-		AddFilter("강아지"); // 기본 필터링 단어 추가
+		// #1
+		AddFilter("강아지");
 	}
 
 	~Chat()
 	{
 		delete filters_;
+		delete letters_to_ignore_;
 	}
 
 	void AddFilter(std::string filter)
 	{
 		filters_->push_back(filter);
+	}
+
+	void AddLettersToIgnore(std::string letters_to_ignore)
+	{
+		for (int i = 0; i < letters_to_ignore.size(); i++)
+		{
+			letters_to_ignore_->push_back(letters_to_ignore[i]);
+		}
 	}
 
 	bool IsAscii(const char& letter)
@@ -40,13 +52,17 @@ int main()
 {
 	Chat chat;
 
+	// #2
 	chat.AddFilter("puppy");
 	chat.AddFilter("dog");
+
+	// #2.5 !@#$%(^)&*(\s)
+	chat.AddLettersToIgnore("!@#$%\\^&*\\s");
+
 	chat.Play();
 
 	return 0;
 }
-
 
 void Chat::Play()
 {
@@ -72,26 +88,40 @@ std::string Chat::Filter(std::string& original_input)
 	{
 		const std::string& filter = filters_->at(i);
 
-		std::string expression;
-		for (int j = 0; j < filter.size(); j++)
-		{
-			expression.push_back(filter[j]);
-			if (j == filter.size() - 1)
-				break;
-			expression.append("\\s*");
-		}
-
 		std::string replacement_word;
-		for (int j = 0; j < filter.size(); j++)
+		for (int f = 0; f < filter.size(); f++)
 		{
 			replacement_word.push_back(REPLACEMENT);
-			if (!IsAscii(filter[j]))
-				j++;
+			if (!IsAscii(filter[f]))
+				f++;
 		}
+		
+		for (int l = 0; l < letters_to_ignore_->size(); l++)
+		{
+			std::string mask;
+			mask.append("[");
+			mask.push_back(letters_to_ignore_->at(l));
+			if (letters_to_ignore_->at(l) == '\\')
+			{
+				l++;
+				mask.push_back(letters_to_ignore_->at(l));
+			}
+			mask.append("]*");
 
-		std::regex rgx(expression);
-		original_input = regex_replace(original_input, rgx, replacement_word);
+			std::string expression;
+			for (int f = 0; f < filter.size(); f++)
+			{
+				expression.push_back(filter[f]);
+				if (!IsAscii(filter[f]))
+					expression.push_back(filter[++f]);
+				if (f == filter.size() - 1)
+					break;
+				expression.append(mask);
+			}
+
+			std::regex rgx(expression);
+			original_input = regex_replace(original_input, rgx, replacement_word);
+		}
 	}
 	return original_input;
 }
-
