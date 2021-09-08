@@ -102,10 +102,7 @@ std::string Chat::Filter(std::string& original_input)
 			mask.append("[");
 			mask.push_back(letters_to_ignore_->at(l));
 			if (letters_to_ignore_->at(l) == '\\')
-			{
-				l++;
-				mask.push_back(letters_to_ignore_->at(l));
-			}
+				mask.push_back(letters_to_ignore_->at(++l));
 			mask.append("]*");
 
 			std::string expression;
