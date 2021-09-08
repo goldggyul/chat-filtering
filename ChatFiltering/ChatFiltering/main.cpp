@@ -1,7 +1,7 @@
 ﻿#include <iostream>
-#include<string>
-#include<vector>
-#include<regex>
+#include <string>
+#include <vector>
+#include <regex>
 
 const int MIN_ASCII = 0;
 const int MAX_ASCII = 127;
@@ -10,25 +10,20 @@ const char REPLACEMENT_LETTER = '*';
 class Chat
 {
 private:
-	std::vector<std::string>* filters_;
+	std::vector<std::string> filters_;
 	std::string letters_to_ignore_;
 
 public:
-	Chat() :filters_(new std::vector<std::string>)
+	Chat()
 	{
 		letters_to_ignore_ = "";
 		// #1
 		AddFilter("강아지");
 	}
 
-	~Chat()
-	{
-		delete filters_;
-	}
-
 	void AddFilter(std::string filter)
 	{
-		filters_->push_back(filter);
+		filters_.push_back(filter);
 	}
 
 	void AddLettersToIgnore(std::string letters_to_ignore)
@@ -46,7 +41,8 @@ public:
 	std::string GetReplacementWord(const std::string& filter);
 	std::string GetExpression(const std::string& mask);
 	std::string GetMask();
-	bool IsEveryFilteredLetterSame(const std::smatch& m);
+	bool IsAppropriateToFilter(const std::smatch& m);
+	bool IsEveryLetterSame(const std::string& match_result);
 };
 
 int main()
@@ -58,8 +54,8 @@ int main()
 	chat.AddFilter("dog");
 	chat.AddLettersToIgnore("\\s");
 
-	// #2.5: !@#$%(^)&*(\s)
-	chat.AddLettersToIgnore("!@#$%\^&*\\s");
+	// #2.5: !@#$%^&*(\s)
+	chat.AddLettersToIgnore("!@#$%^&*\\s");
 
 	chat.Play();
 
@@ -86,18 +82,20 @@ void Chat::Play()
 std::string Chat::Filter(const std::string& original_input)
 {
 	std::string input = original_input;
-	for (int i = 0; i < filters_->size(); i++)
+
+	int filters_size = filters_.size();
+	for (int i = 0; i < filters_size; i++)
 	{
-		const std::string& filter = filters_->at(i);
+		const std::string& filter = filters_.at(i);
 
 		std::string replacement_word = GetReplacementWord(filter);
 		std::string expression = GetExpression(filter);
 		std::smatch m;
-		std::string search_output="";
+		std::string search_output = "";
 		while (regex_search(input, m, std::regex(expression)))
 		{
 			search_output.append(m.prefix());
-			if (IsEveryFilteredLetterSame(m))
+			if (IsAppropriateToFilter(m))
 				search_output.append(replacement_word);
 			else
 				search_output.append(m.str());
@@ -111,7 +109,8 @@ std::string Chat::Filter(const std::string& original_input)
 std::string Chat::GetReplacementWord(const std::string& filter)
 {
 	std::string replacement_word;
-	for (int f = 0; f < filter.size(); f++)
+	int filter_size = filter.size();
+	for (int f = 0; f < filter_size; f++)
 	{
 		replacement_word.push_back(REPLACEMENT_LETTER);
 		if (!IsAscii(filter[f]))
@@ -122,9 +121,10 @@ std::string Chat::GetReplacementWord(const std::string& filter)
 
 std::string Chat::GetExpression(const std::string& filter)
 {
-	std::string mask=GetMask();
+	std::string mask = GetMask();
 	std::string expression;
-	for (int f = 0; f < filter.size(); f++)
+	int filter_size = filter.size();
+	for (int f = 0; f < filter_size; f++)
 	{
 		expression.push_back(filter[f]);
 		if (!IsAscii(filter[f]))
@@ -145,15 +145,21 @@ std::string Chat::GetMask()
 	return mask;
 }
 
-bool Chat::IsEveryFilteredLetterSame(const std::smatch& m)
+bool Chat::IsAppropriateToFilter(const std::smatch& m)
 {
 	std::string match_result;
-	for (int i = 1; i < m.size(); i++)
+	int m_size = m.size();
+	for (int i = 1; i < m_size; i++)
 	{
 		match_result.append(m[i].str());
 	}
+	return IsEveryLetterSame(match_result);
+}
 
-	for (int i = 1; i < match_result.size(); i++)
+bool Chat::IsEveryLetterSame(const std::string& match_result)
+{
+	int match_result_size = match_result.size();
+	for (int i = 1; i < match_result_size; i++)
 	{
 		if (match_result[i] != match_result[i - 1])
 		{
