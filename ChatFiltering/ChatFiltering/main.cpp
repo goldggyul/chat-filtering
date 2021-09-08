@@ -46,6 +46,8 @@ public:
 
 	void Play();
 	std::string Filter(std::string& original_input);
+	std::string GetReplacementWord(const std::string& filter);
+	std::string GetExpression(const std::string& filter, const std::string& mask);
 };
 
 int main()
@@ -88,13 +90,7 @@ std::string Chat::Filter(std::string& original_input)
 	{
 		const std::string& filter = filters_->at(i);
 
-		std::string replacement_word;
-		for (int f = 0; f < filter.size(); f++)
-		{
-			replacement_word.push_back(REPLACEMENT);
-			if (!IsAscii(filter[f]))
-				f++;
-		}
+		std::string replacement_word = GetReplacementWord(filter);
 		
 		for (int l = 0; l < letters_to_ignore_->size(); l++)
 		{
@@ -105,20 +101,37 @@ std::string Chat::Filter(std::string& original_input)
 				mask.push_back(letters_to_ignore_->at(++l));
 			mask.append("]*");
 
-			std::string expression;
-			for (int f = 0; f < filter.size(); f++)
-			{
-				expression.push_back(filter[f]);
-				if (!IsAscii(filter[f]))
-					expression.push_back(filter[++f]);
-				if (f == filter.size() - 1)
-					break;
-				expression.append(mask);
-			}
+			std::string expression = GetExpression(filter, mask);
 
-			std::regex rgx(expression);
-			original_input = regex_replace(original_input, rgx, replacement_word);
+			original_input = regex_replace(original_input, std::regex(expression), replacement_word);
 		}
 	}
 	return original_input;
+}
+
+std::string Chat::GetReplacementWord(const std::string& filter)
+{
+	std::string replacement_word;
+	for (int f = 0; f < filter.size(); f++)
+	{
+		replacement_word.push_back(REPLACEMENT);
+		if (!IsAscii(filter[f]))
+			f++;
+	}
+	return replacement_word;
+}
+
+std::string Chat::GetExpression(const std::string& filter, const std::string& mask)
+{
+	std::string expression;
+	for (int f = 0; f < filter.size(); f++)
+	{
+		expression.push_back(filter[f]);
+		if (!IsAscii(filter[f]))
+			expression.push_back(filter[++f]);
+		if (f == filter.size() - 1)
+			break;
+		expression.append(mask);
+	}
+	return expression;
 }
