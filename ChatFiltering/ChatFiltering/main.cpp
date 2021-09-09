@@ -38,10 +38,11 @@ public:
 
 	void Play();
 	std::string Filter(const std::string& original_input);
+	std::string FilterUsingOneFilter(const std::string& input, const std::string& filter);
 	std::string GetReplacementWord(const std::string& filter);
-	std::string GetExpression(const std::string& mask);
-	std::string GetMask();
-	bool IsAppropriateToFilter(const std::smatch& m);
+	std::string GetExpressionForRegex(const std::string& filter);
+	std::string GetExpressionOfLettersToIgnore();
+	bool CanReplace(const std::smatch& m);
 	bool IsEveryLetterSame(const std::string& match_result);
 };
 
@@ -87,23 +88,41 @@ std::string Chat::Filter(const std::string& original_input)
 	for (int i = 0; i < filters_size; i++)
 	{
 		const std::string& filter = filters_.at(i);
-
-		std::string replacement_word = GetReplacementWord(filter);
-		std::string expression = GetExpression(filter);
-		std::smatch m;
-		std::string search_output = "";
-		while (regex_search(input, m, std::regex(expression)))
-		{
-			search_output.append(m.prefix());
-			if (IsAppropriateToFilter(m))
-				search_output.append(replacement_word);
-			else
-				search_output.append(m.str());
-			input = m.suffix();
-		}
-		input = search_output.append(input);
+		input = FilterUsingOneFilter(input, filter);
 	}
 	return input;
+}
+
+std::string Chat::FilterUsingOneFilter(const std::string& input, const std::string& filter)
+{
+	std::string replacement_word = GetReplacementWord(filter);
+	std::string expression = GetExpressionForRegex(filter);
+	std::string filtered = "";
+
+	std::string not_filtered = input;
+	std::smatch m;
+	std::regex rgx(expression);
+	while (!not_filtered.empty())
+	{
+		bool is_matched = regex_search(not_filtered, m, rgx);
+		if (is_matched)
+		{
+			filtered.append(m.prefix());
+			// 정규식과 일치한다고 무조건 대체하는 것이 아니라,
+			// 일치하는 문자[공백|!|@|#|$|%|^|&|*]가 모두 같은 종류여야 대체
+			if (CanReplace(m))
+				filtered.append(replacement_word);
+			else
+				filtered.append(m.str());
+			not_filtered = m.suffix();
+		}
+		else
+		{
+			filtered.append(not_filtered);
+			not_filtered = "";
+		}
+	}
+	return filtered;
 }
 
 std::string Chat::GetReplacementWord(const std::string& filter)
@@ -119,40 +138,43 @@ std::string Chat::GetReplacementWord(const std::string& filter)
 	return replacement_word;
 }
 
-std::string Chat::GetExpression(const std::string& filter)
+std::string Chat::GetExpressionForRegex(const std::string& filter)
 {
-	std::string mask = GetMask();
+	std::string expression_to_ignore = GetExpressionOfLettersToIgnore();
 	std::string expression;
+	
+	// 필터링 단어의 글자 사이사이에 '무시할 문자들의 정규식'을 삽입하여 최종 정규식 생성
+	// 무시할 문자들의 정규식: [!@#$%^&*\\s]*
+	// []안에 문자 중 하나가 0개 이상 있을 경우 match된다.
+	// 따라서 모두 다른 종류든 같은 종류든 위의 경우에 해당한다면 모두 match된다.
 	int filter_size = filter.size();
 	for (int f = 0; f < filter_size; f++)
 	{
 		expression.push_back(filter[f]);
 		if (!IsAscii(filter[f]))
 			expression.push_back(filter[++f]);
-		if (f == filter.size() - 1)
+		if (f == filter_size - 1)
 			break;
-		expression.append(mask);
+		expression.append(expression_to_ignore);
 	}
 	return expression;
 }
 
-std::string Chat::GetMask()
+std::string Chat::GetExpressionOfLettersToIgnore()
 {
-	std::string mask;
-	mask.append("([");
-	mask.append(letters_to_ignore_);
-	mask.append("]*)");
-	return mask;
+	std::string expression;
+	expression.append("([");
+	expression.append(letters_to_ignore_);
+	expression.append("]*)");
+	return expression;
 }
 
-bool Chat::IsAppropriateToFilter(const std::smatch& m)
+bool Chat::CanReplace(const std::smatch& m)
 {
 	std::string match_result;
 	int m_size = m.size();
 	for (int i = 1; i < m_size; i++)
-	{
 		match_result.append(m[i].str());
-	}
 	return IsEveryLetterSame(match_result);
 }
 
@@ -160,11 +182,7 @@ bool Chat::IsEveryLetterSame(const std::string& match_result)
 {
 	int match_result_size = match_result.size();
 	for (int i = 1; i < match_result_size; i++)
-	{
 		if (match_result[i] != match_result[i - 1])
-		{
 			return false;
-		}
-	}
 	return true;
 }
