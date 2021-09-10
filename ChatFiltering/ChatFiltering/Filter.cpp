@@ -1,4 +1,4 @@
-#include "Filter.h"
+ï»¿#include "Filter.h"
 
 std::wstring Filter::letters_to_ignore_ = L"";
 
@@ -9,7 +9,7 @@ std::wstring Filter::Filtering(std::wstring not_filtered){
 
 	std::wsmatch match_result;
 	std::wregex rgx(expression);
-	// Á¤±Ô½ÄÀ» ÀÌ¿ëÇÏ¿© ´õ ÀÌ»ó ÀÏÄ¡ÇÏÁö ¾ÊÀ» ¶§±îÁö ÇÊÅÍ¸µ
+	// ì •ê·œì‹ì„ ì´ìš©í•˜ì—¬ ë” ì´ìƒ ì¼ì¹˜í•˜ì§€ ì•Šì„ ë•Œê¹Œì§€ í•„í„°ë§
 	while (!not_filtered.empty())
 	{
 		bool is_matched = regex_search(not_filtered, match_result, rgx);
@@ -44,10 +44,10 @@ std::wstring Filter::GetExpressionForRegex()
 	std::wstring expression_to_ignore = GetExpressionOfLettersToIgnore();
 	std::wstring expression;
 
-	// ÇÊÅÍ¸µ ´Ü¾îÀÇ ±ÛÀÚ »çÀÌ»çÀÌ¿¡ '¹«½ÃÇÒ ¹®ÀÚµéÀÇ Á¤±Ô½Ä'À» »ğÀÔÇÏ¿© ÃÖÁ¾ Á¤±Ô½Ä »ı¼º
-	// ¹«½ÃÇÒ ¹®ÀÚµéÀÇ Á¤±Ô½Ä: [!@#$%^&*\\s]*
-	// []¾È¿¡ ¹®ÀÚ Áß ÇÏ³ª°¡ 0°³ ÀÌ»ó ÀÖÀ» °æ¿ì matchµÈ´Ù.
-	// µû¶ó¼­ ¸ğµÎ ´Ù¸¥ Á¾·ùµç °°Àº Á¾·ùµç À§ÀÇ °æ¿ì¿¡ ÇØ´çÇÑ´Ù¸é ¸ğµÎ matchµÈ´Ù.
+	// í•„í„°ë§ ë‹¨ì–´ì˜ ê¸€ì ì‚¬ì´ì‚¬ì´ì— 'ë¬´ì‹œí•  ë¬¸ìë“¤ì˜ ì •ê·œì‹'ì„ ì‚½ì…í•˜ì—¬ ìµœì¢… ì •ê·œì‹ ìƒì„±
+	// ë¬´ì‹œí•  ë¬¸ìë“¤ì˜ ì •ê·œì‹: [!@#$%^&*\\s]*
+	// []ì•ˆì— ë¬¸ì ì¤‘ í•˜ë‚˜ê°€ 0ê°œ ì´ìƒ ìˆì„ ê²½ìš° matchëœë‹¤.
+	// ë”°ë¼ì„œ ëª¨ë‘ ë‹¤ë¥¸ ì¢…ë¥˜ë“  ê°™ì€ ì¢…ë¥˜ë“  ìœ„ì˜ ê²½ìš°ì— í•´ë‹¹í•œë‹¤ë©´ ëª¨ë‘ matchëœë‹¤.
 	for (size_t f = 0; f < filter_.size(); f++)
 	{
 		expression.push_back(filter_[f]);

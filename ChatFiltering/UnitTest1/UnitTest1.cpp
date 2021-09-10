@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "CppUnitTest.h"
 #include "../ChatFiltering/main.cpp"
 #include "../ChatFiltering/Filter.cpp"
@@ -12,11 +12,11 @@ namespace UnitTest1
 	public:
 		TEST_METHOD(TestMethod1)
 		{
-			// ±âº» ÇÊÅÍ¸µ
+			// ê¸°ë³¸ í•„í„°ë§
 			Chat chat;
 			chat.AddFilter(L"puppy");
 
-			std::wstring output = chat.Filtering(L"°­¾ÆÁö");
+			std::wstring output = chat.Filtering(L"ê°•ì•„ì§€");
 			std::wstring expected = L"***";
 			Assert::AreEqual(output, expected);
 
@@ -24,50 +24,50 @@ namespace UnitTest1
 			expected=L"*****";
 			Assert::AreEqual(output, expected);
 
-			output = chat.Filtering(L"Àú °­¾ÆÁö Á» ºÁ");
-			expected = L"Àú *** Á» ºÁ";
+			output = chat.Filtering(L"ì € ê°•ì•„ì§€ ì¢€ ë´");
+			expected = L"ì € *** ì¢€ ë´";
 			Assert::AreEqual(output, expected);
 		}
 
 		TEST_METHOD(TestMethod2)
 		{
-			// ±âº» ÇÊÅÍ¸µ
+			// ê¸°ë³¸ í•„í„°ë§
 			Chat chat;
 			chat.AddFilter(L"puppy");
 			chat.AddFilter(L"dog");
 			chat.AddLettersToIgnore(L"\\s");
 			chat.AddLettersToIgnore(L"!@#$%^&*\\s");
 
-			std::wstring output = chat.Filtering(L"°­@¾Æ@Áö  p   upp    y °­ ¾Æ@Áö d  og d#o#g");
-			std::wstring expected = L"***  ***** °­ ¾Æ@Áö *** ***";
+			std::wstring output = chat.Filtering(L"ê°•@ì•„@ì§€  p   upp    y ê°• ì•„@ì§€ d  og d#o#g");
+			std::wstring expected = L"***  ***** ê°• ì•„@ì§€ *** ***";
 			Assert::AreEqual(output, expected);
 		}
 
 		TEST_METHOD(TestMethod3)
 		{
-			// ±âº» ÇÊÅÍ¸µ
+			// ê¸°ë³¸ í•„í„°ë§
 			Chat chat;
 			chat.AddFilter(L"puppy");
 			chat.AddFilter(L"dog");
 			chat.AddLettersToIgnore(L"\\s");
 			chat.AddLettersToIgnore(L"!@#$%^&*\\s");
 
-			std::wstring output = chat.Filtering(L"°­##¾Æ@@@Áö !@#!#% p^^^^u@@pp!!y");
-			std::wstring expected = L"°­##¾Æ@@@Áö !@#!#% p^^^^u@@pp!!y";
+			std::wstring output = chat.Filtering(L"ê°•##ì•„@@@ì§€ !@#!#% p^^^^u@@pp!!y");
+			std::wstring expected = L"ê°•##ì•„@@@ì§€ !@#!#% p^^^^u@@pp!!y";
 			Assert::AreEqual(output, expected);
 		}
 
 		TEST_METHOD(TestMethod4)
 		{
-			// ±âº» ÇÊÅÍ¸µ
+			// ê¸°ë³¸ í•„í„°ë§
 			Chat chat;
 			chat.AddFilter(L"puppy");
 			chat.AddFilter(L"dog");
 			chat.AddLettersToIgnore(L"\\s");
 			chat.AddLettersToIgnore(L"!@#$%^&*\\s");
 
-			std::wstring output = chat.Filtering(L"°­##¾Æ@@@Áö !@#!#% p^^^^u@@pp!!y °­@@¾Æ@@@Áö ");
-			std::wstring expected = L"°­##¾Æ@@@Áö !@#!#% p^^^^u@@pp!!y *** ";
+			std::wstring output = chat.Filtering(L"ê°•##ì•„@@@ì§€ !@#!#% p^^^^u@@pp!!y ê°•@@ì•„@@@ì§€ ");
+			std::wstring expected = L"ê°•##ì•„@@@ì§€ !@#!#% p^^^^u@@pp!!y *** ";
 			Assert::AreEqual(output, expected);
 		}
 

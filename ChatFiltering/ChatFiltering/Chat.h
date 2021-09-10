@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Filter.h"
 
 class Chat
@@ -7,7 +7,7 @@ public:
 	Chat()
 	{
 		// #1
-		AddFilter(L"°­¾ÆÁö");
+		AddFilter(L"ê°•ì•„ì§€");
 	}
 
 	void AddFilter(std::wstring filter)
