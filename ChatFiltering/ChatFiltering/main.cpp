@@ -6,11 +6,12 @@
 class Chat
 {
 private:
-	std::vector<std::string> filters_;
-	std::string letters_to_ignore_;
 	static const int MIN_ASCII = 0;
 	static const int MAX_ASCII = 127;
 	static const char REPLACEMENT_LETTER = '*';
+
+	std::vector<std::string> filters_;
+	std::string letters_to_ignore_;
 
 public:
 	Chat()
@@ -36,8 +37,8 @@ public:
 	}
 
 	void Play();
-	std::string Filter(const std::string& original_input);
-	std::string FilterUsingOneFilter(const std::string& input, const std::string& filter);
+	std::string Filtering(const std::string& original_input);
+	std::string FilteringUsingOneFilter(const std::string& input, const std::string& filter);
 	std::string GetReplacementWord(const std::string& filter);
 	std::string GetExpressionForRegex(const std::string& filter);
 	std::string GetExpressionOfLettersToIgnore();
@@ -74,12 +75,12 @@ void Chat::Play()
 		if (input == "q")
 			return;
 
-		std::string output = Filter(input);
+		std::string output = Filtering(input);
 		std::cout << ">> " << output << std::endl;
 	}
 }
 
-std::string Chat::Filter(const std::string& original_input)
+std::string Chat::Filtering(const std::string& original_input)
 {
 	std::string input = original_input;
 
@@ -87,33 +88,32 @@ std::string Chat::Filter(const std::string& original_input)
 	for (int i = 0; i < filters_size; i++)
 	{
 		const std::string& filter = filters_.at(i);
-		input = FilterUsingOneFilter(input, filter);
+		input = FilteringUsingOneFilter(input, filter);
 	}
 	return input;
 }
 
-std::string Chat::FilterUsingOneFilter(const std::string& input, const std::string& filter)
+std::string Chat::FilteringUsingOneFilter(const std::string& input, const std::string& filter)
 {
 	std::string replacement_word = GetReplacementWord(filter);
 	std::string expression = GetExpressionForRegex(filter);
 	std::string filtered = "";
 
 	std::string not_filtered = input;
-	std::smatch m;
+	std::smatch match_result;
 	std::regex rgx(expression);
+	// 정규식을 이용하여 더 이상 일치하지 않을 때까지 필터링
 	while (!not_filtered.empty())
 	{
-		bool is_matched = regex_search(not_filtered, m, rgx);
+		bool is_matched = regex_search(not_filtered, match_result, rgx);
 		if (is_matched)
 		{
-			filtered.append(m.prefix());
-			// 정규식과 일치한다고 무조건 대체하는 것이 아니라,
-			// 일치하는 문자[공백|!|@|#|$|%|^|&|*]가 모두 같은 종류여야 대체
-			if (CanReplace(m))
+			filtered.append(match_result.prefix());
+			if (CanReplace(match_result))
 				filtered.append(replacement_word);
 			else
-				filtered.append(m.str());
-			not_filtered = m.suffix();
+				filtered.append(match_result.str());
+			not_filtered = match_result.suffix();
 		}
 		else
 		{
