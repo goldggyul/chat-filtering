@@ -1,22 +1,5 @@
 #include "Chat.h"
 
-void Chat::Play()
-{
-	std::wcout << "q 입력 시 종료" << std::endl;
-	while (true)
-	{
-		std::wcout << "입력: ";
-		std::wstring input;
-		getline(std::wcin, input);
-
-		if (input == L"q")
-			return;
-
-		std::wstring output = Filtering(input);
-		std::wcout << ">> " << output << std::endl;
-	}
-}
-
 std::wstring Chat::Filtering(const std::wstring& original_input)
 {
 	std::wstring input = original_input;

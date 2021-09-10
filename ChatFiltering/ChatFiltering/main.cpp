@@ -12,7 +12,19 @@ int main()
 	// #2.5: !@#$%^&*(\s)
 	chat.AddLettersToIgnore(L"!@#$%^&*\\s");
 
-	chat.Play();
+	std::wcout << "q 입력 시 종료" << std::endl;
+	while (true)
+	{
+		std::wcout << "입력: ";
+		std::wstring input;
+		getline(std::wcin, input);
+
+		if (input == L"q")
+			break;
+
+		std::wstring output = chat.Filtering(input);
+		std::wcout << ">> " << output << std::endl;
+	}
 
 	return 0;
 }
