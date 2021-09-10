@@ -4,12 +4,6 @@
 class Chat
 {
 public:
-	Chat()
-	{
-		// #1
-		AddFilter(L"강아지");
-	}
-
 	void AddFilter(std::wstring filter)
 	{
 		filters_.push_back(Filter(filter));
