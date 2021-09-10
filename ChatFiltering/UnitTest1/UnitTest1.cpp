@@ -2,6 +2,7 @@
 #include "CppUnitTest.h"
 #include "../ChatFiltering/main.cpp"
 #include "../ChatFiltering/Chat.cpp"
+#include "../ChatFiltering/Filter.cpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

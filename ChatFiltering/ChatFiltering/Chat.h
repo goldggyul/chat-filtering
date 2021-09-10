@@ -2,42 +2,29 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <regex>
+#include "Filter.h"
 
 class Chat
 {
 public:
 	Chat()
 	{
-		letters_to_ignore_ = L"";
 		// #1
 		AddFilter(L"°­¾ÆÁö");
 	}
 
 	void AddFilter(std::wstring filter)
 	{
-		filters_.push_back(filter);
+		filters_.push_back(Filter(filter));
 	}
 
 	void AddLettersToIgnore(std::wstring letters_to_ignore)
 	{
-		letters_to_ignore_.append(letters_to_ignore);
+		Filter::SetLettersToIgnore(letters_to_ignore);
 	}
 
 	std::wstring Filtering(const std::wstring& original_input);
 
 private:
-	static const int MIN_KOREAN = 0;
-	static const int MAX_KOREAN = 127;
-	static const wchar_t REPLACEMENT_LETTER = '*';
-
-	std::wstring FilteringUsingOneFilter(const std::wstring& input, const std::wstring& filter);
-	std::wstring GetReplacementWord(const std::wstring& filter);
-	std::wstring GetExpressionForRegex(const std::wstring& filter);
-	std::wstring GetExpressionOfLettersToIgnore();
-	bool CanReplace(const std::wsmatch& m);
-	bool IsEveryLetterSame(const std::wstring& match_result);
-
-	std::vector<std::wstring> filters_;
-	std::wstring letters_to_ignore_;
+	std::vector<Filter> filters_;
 };

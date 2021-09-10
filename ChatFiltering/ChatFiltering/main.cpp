@@ -1,5 +1,7 @@
 ﻿#include "Chat.h"
 
+std::wstring Filter::letters_to_ignore_=L"";
+
 int main()
 {
 	Chat chat;
