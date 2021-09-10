@@ -6,8 +6,8 @@
 class Chat
 {
 private:
-	static const int MIN_ASCII = 0;
-	static const int MAX_ASCII = 127;
+	static const int MIN_KOREAN = 0;
+	static const int MAX_KOREAN = 127;
 	static const char REPLACEMENT_LETTER = '*';
 
 	std::vector<std::string> filters_;
@@ -31,9 +31,11 @@ public:
 		letters_to_ignore_.append(letters_to_ignore);
 	}
 
-	bool IsAscii(const char& letter)
+	bool IsKorean(const char& letter)
 	{
-		return letter >= MIN_ASCII && letter <= MAX_ASCII;
+		// 유니코드 한글 2진수 범위 : 1010 1100 0000 0000 ~ 1101 0111 1010 0011
+		// 앞에 8비트가 모두 1로 시작 -> 0x80 & 한글 == 1
+		return letter & 0x80;
 	}
 
 	void Play();
@@ -131,7 +133,7 @@ std::string Chat::GetReplacementWord(const std::string& filter)
 	for (int f = 0; f < filter_size; f++)
 	{
 		replacement_word.push_back(REPLACEMENT_LETTER);
-		if (!IsAscii(filter[f]))
+		if (IsKorean(filter[f]))
 			f++;
 	}
 	return replacement_word;
@@ -150,7 +152,7 @@ std::string Chat::GetExpressionForRegex(const std::string& filter)
 	for (int f = 0; f < filter_size; f++)
 	{
 		expression.push_back(filter[f]);
-		if (!IsAscii(filter[f]))
+		if (IsKorean(filter[f]))
 			expression.push_back(filter[++f]);
 		if (f == filter_size - 1)
 			break;
