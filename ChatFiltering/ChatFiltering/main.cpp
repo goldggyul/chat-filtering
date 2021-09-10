@@ -3,15 +3,14 @@
 #include <vector>
 #include <regex>
 
-const int MIN_ASCII = 0;
-const int MAX_ASCII = 127;
-const char REPLACEMENT_LETTER = '*';
-
 class Chat
 {
 private:
 	std::vector<std::string> filters_;
 	std::string letters_to_ignore_;
+	static const int MIN_ASCII = 0;
+	static const int MAX_ASCII = 127;
+	static const char REPLACEMENT_LETTER = '*';
 
 public:
 	Chat()
