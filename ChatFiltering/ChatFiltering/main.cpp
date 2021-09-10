@@ -85,13 +85,8 @@ void Chat::Play()
 std::string Chat::Filtering(const std::string& original_input)
 {
 	std::string input = original_input;
-
-	int filters_size = filters_.size();
-	for (int i = 0; i < filters_size; i++)
-	{
-		const std::string& filter = filters_.at(i);
+	for (const std::string& filter:filters_)
 		input = FilteringUsingOneFilter(input, filter);
-	}
 	return input;
 }
 
@@ -129,8 +124,7 @@ std::string Chat::FilteringUsingOneFilter(const std::string& input, const std::s
 std::string Chat::GetReplacementWord(const std::string& filter)
 {
 	std::string replacement_word;
-	int filter_size = filter.size();
-	for (int f = 0; f < filter_size; f++)
+	for (size_t f = 0; f < filter.size(); f++)
 	{
 		replacement_word.push_back(REPLACEMENT_LETTER);
 		if (IsKorean(filter[f]))
@@ -148,13 +142,12 @@ std::string Chat::GetExpressionForRegex(const std::string& filter)
 	// 무시할 문자들의 정규식: [!@#$%^&*\\s]*
 	// []안에 문자 중 하나가 0개 이상 있을 경우 match된다.
 	// 따라서 모두 다른 종류든 같은 종류든 위의 경우에 해당한다면 모두 match된다.
-	int filter_size = filter.size();
-	for (int f = 0; f < filter_size; f++)
+	for (size_t f = 0; f < filter.size(); f++)
 	{
 		expression.push_back(filter[f]);
 		if (IsKorean(filter[f]))
 			expression.push_back(filter[++f]);
-		if (f == filter_size - 1)
+		if (f == filter.size() - 1)
 			break;
 		expression.append(expression_to_ignore);
 	}
@@ -173,16 +166,14 @@ std::string Chat::GetExpressionOfLettersToIgnore()
 bool Chat::CanReplace(const std::smatch& m)
 {
 	std::string match_result;
-	int m_size = m.size();
-	for (int i = 1; i < m_size; i++)
+	for (size_t i = 1; i < m.size(); i++)
 		match_result.append(m[i].str());
 	return IsEveryLetterSame(match_result);
 }
 
 bool Chat::IsEveryLetterSame(const std::string& match_result)
 {
-	int match_result_size = match_result.size();
-	for (int i = 1; i < match_result_size; i++)
+	for (size_t i = 1; i < match_result.size(); i++)
 		if (match_result[i] != match_result[i - 1])
 			return false;
 	return true;
