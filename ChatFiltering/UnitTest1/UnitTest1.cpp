@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 #include "../ChatFiltering/main.cpp"
+#include "../ChatFiltering/Chat.cpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
