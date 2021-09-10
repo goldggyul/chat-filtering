@@ -1,9 +1,16 @@
 ﻿#include "Chat.h"
 
-std::wstring Filter::letters_to_ignore_=L"";
+void multibyte_setting()
+{
+	std::locale::global(std::locale("kor"));
+	std::wcout.imbue(std::locale("kor"));
+	std::wcin.imbue(std::locale("kor"));
+}
 
 int main()
 {
+	multibyte_setting();
+
 	Chat chat;
 
 	// #2
@@ -14,10 +21,10 @@ int main()
 	// #2.5: !@#$%^&*(\s)
 	chat.AddLettersToIgnore(L"!@#$%^&*\\s");
 
-	std::wcout << "q 입력 시 종료" << std::endl;
+	std::wcout << L"q 입력 시 종료" << std::endl;
 	while (true)
 	{
-		std::wcout << "입력: ";
+		std::wcout << L"입력: ";
 		std::wstring input;
 		getline(std::wcin, input);
 
@@ -25,8 +32,7 @@ int main()
 			break;
 
 		std::wstring output = chat.Filtering(input);
-		std::wcout << ">> " << output << std::endl;
+		std::wcout << L">> " << output << std::endl;
 	}
-
 	return 0;
 }

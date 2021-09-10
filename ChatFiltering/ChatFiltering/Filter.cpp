@@ -1,5 +1,7 @@
 #include "Filter.h"
 
+std::wstring Filter::letters_to_ignore_ = L"";
+
 std::wstring Filter::Filtering(std::wstring not_filtered){
 	std::wstring replacement_word = GetReplacementWord();
 	std::wstring expression = GetExpressionForRegex();
