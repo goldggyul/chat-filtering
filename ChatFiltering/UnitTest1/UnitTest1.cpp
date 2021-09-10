@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "CppUnitTest.h"
 #include "../ChatFiltering/main.cpp"
-#include "../ChatFiltering/Chat.cpp"
 #include "../ChatFiltering/Filter.cpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -23,6 +22,10 @@ namespace UnitTest1
 
 			output = chat.Filtering(L"puppy");
 			expected=L"*****";
+			Assert::AreEqual(output, expected);
+
+			output = chat.Filtering(L"Àú °­¾ÆÁö Á» ºÁ");
+			expected = L"Àú *** Á» ºÁ";
 			Assert::AreEqual(output, expected);
 		}
 

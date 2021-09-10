@@ -139,7 +139,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Chat.cpp" />
     <ClCompile Include="Filter.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

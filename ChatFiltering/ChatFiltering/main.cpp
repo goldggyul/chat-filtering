@@ -1,16 +1,11 @@
 ﻿#include "Chat.h"
 
-void multibyte_setting()
-{
-	std::locale::global(std::locale("kor"));
-	std::wcout.imbue(std::locale("kor"));
-	std::wcin.imbue(std::locale("kor"));
-}
-
 int main()
 {
-	multibyte_setting();
-
+	std::locale::global(std::locale("kor")); // Resets the default locale for the program
+	std::wcout.imbue(std::locale("kor")); // Changes the locale of stream
+	std::wcin.imbue(std::locale("kor"));
+	
 	Chat chat;
 
 	// #2
