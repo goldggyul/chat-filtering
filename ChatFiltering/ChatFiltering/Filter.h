@@ -3,27 +3,28 @@
 #include <string>
 #include <vector>
 #include <regex>
+#include<set>
 
 class Filter
 {
 public:
 	Filter(std::wstring filter) : word_(filter) {}
-	static void SetLettersToIgnore(std::wstring letters_to_ignore)
-	{
-		letters_to_ignore_.append(letters_to_ignore);
-	}
+	static void AddLettersToIgnore(std::wstring letters_to_ignore);
 	std::wstring Filtering(std::wstring input);
 
 private:
 	static const wchar_t REPLACEMENT_LETTER = '*';
-	static std::wstring letters_to_ignore_;
+	static const int FAIL = -1;
 
-	std::wstring GetExpressionForRegex();
-	std::wstring GetExpressionOfLettersToIgnore();
+	static std::set<wchar_t>& GetLettersToIgnore()
+	{
+		static std::set<wchar_t>* letters_to_ignore = new std::set<wchar_t>();
+		return *letters_to_ignore;
+	}
 
-	bool CanReplace(const std::wsmatch& m);
-	bool IsEveryLetterSame(const std::wstring& match_result);
-
+	int GetLastIndexIfReplaceable(const std::wstring& input, int input_idx, int word_idx, bool isFirstCapture, wchar_t ignore_letter);
+	bool IsIgnoreLetter(wchar_t letter);
+	
 	std::wstring word_;
 };
 

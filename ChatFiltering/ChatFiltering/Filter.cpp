@@ -1,75 +1,62 @@
 ﻿#include "Filter.h"
+#include<queue>
 
-std::wstring Filter::letters_to_ignore_ = L"";
+void Filter::AddLettersToIgnore(std::wstring letters_to_ignore)
+{
+	std::set<wchar_t>& letters_to_ignore_ = Filter::GetLettersToIgnore();
+	for (wchar_t letter : letters_to_ignore)
+		letters_to_ignore_.insert(letter);
+}
 
-std::wstring Filter::Filtering(std::wstring not_filtered){
-	std::wstring expression = GetExpressionForRegex();
-	std::wstring filtered = L"";
-
-	std::wsmatch match_result;
-	std::wregex rgx(expression);
-	// 정규식을 이용하여 더 이상 일치하지 않을 때까지 필터링
-	while (!not_filtered.empty())
+std::wstring Filter::Filtering(std::wstring input) {
+	std::queue<size_t> q;
+	for (size_t i = 0; i < input.length(); i++)
 	{
-		bool is_matched = regex_search(not_filtered, match_result, rgx);
-		if (is_matched)
+		if (input[i] == word_[0])
 		{
-			filtered.append(match_result.prefix());
-			if (CanReplace(match_result))
-				filtered.append(word_.length(), REPLACEMENT_LETTER);
-			else
-				filtered.append(match_result.str());
-			not_filtered = match_result.suffix();
-		}
-		else
-		{
-			filtered.append(not_filtered);
-			not_filtered = L"";
+			int last_index = GetLastIndexIfReplaceable(input, i, 0, true, L'\0');
+			if (last_index == FAIL)
+				continue;
+			q.push(i);
+			q.push(last_index);
 		}
 	}
-	return filtered;
-}
 
-std::wstring Filter::GetExpressionForRegex()
-{
-	std::wstring expression_to_ignore = GetExpressionOfLettersToIgnore();
-	std::wstring expression;
-
-	// 필터링 단어의 글자 사이사이에 '무시할 문자들의 정규식'을 삽입하여 최종 정규식 생성
-	// 무시할 문자들의 정규식: [!@#$%^&*\\s]*
-	// []안에 문자 중 하나가 0개 이상 있을 경우 match된다.
-	// 따라서 모두 다른 종류든 같은 종류든 위의 경우에 해당한다면 모두 match된다.
-	for (size_t f = 0; f < word_.size(); f++)
+	std::wstring output;
+	size_t first = 0;
+	while (!q.empty())
 	{
-		expression.push_back(word_[f]);
-		if (f == word_.size() - 1)
-			break;
-		expression.append(expression_to_ignore);
+		size_t last = q.front(); q.pop();
+		output.append(input.begin() + first, input.begin() + last);
+		output.append(word_.length(), REPLACEMENT_LETTER);
+		first = q.front() + 1; q.pop();
 	}
-	return expression;
+	output.append(input, first, input.length());
+	return output;
 }
 
-std::wstring Filter::GetExpressionOfLettersToIgnore()
+int Filter::GetLastIndexIfReplaceable(const std::wstring& input, int input_idx, int word_idx, bool isFirstCapture, wchar_t ignore_letter)
 {
-	std::wstring expression;
-	expression.append(L"([");
-	expression.append(letters_to_ignore_);
-	expression.append(L"]*)");
-	return expression;
+	if (word_idx == word_.length() - 1) // 마지막 단어 -> 즉 정답
+		return input_idx;
+	if (input_idx == input.length() - 1) // 입력 끝, 더 이상 못찾음
+		return FAIL;
+	if (word_[word_idx + 1] == input[input_idx + 1]) // 다음 글자 일치
+		return GetLastIndexIfReplaceable(input, input_idx + 1, word_idx + 1, isFirstCapture, ignore_letter);
+	if (IsIgnoreLetter(input[input_idx + 1]))
+		if (isFirstCapture)
+			return GetLastIndexIfReplaceable(input, input_idx + 1, word_idx, !isFirstCapture, input[input_idx + 1]);
+		else if (input[input_idx + 1] == ignore_letter)
+			return GetLastIndexIfReplaceable(input, input_idx + 1, word_idx, isFirstCapture, ignore_letter);
+	return FAIL;
 }
 
-bool Filter::CanReplace(const std::wsmatch& m)
+bool Filter::IsIgnoreLetter(wchar_t letter)
 {
-	std::wstring match_result;
-	for (size_t i = 1; i < m.size(); i++)
-		match_result.append(m[i].str());
-	return IsEveryLetterSame(match_result);
-}
-
-bool Filter::IsEveryLetterSame(const std::wstring& match_result)
-{
-	for (size_t i = 1; i < match_result.size(); i++)
-		if (match_result[i] != match_result[i - 1])
-			return false;
-	return true;
+	std::set<wchar_t>& letters_to_ignore_ = Filter::GetLettersToIgnore();
+	auto it = letters_to_ignore_.find(letter);
+	if (it != letters_to_ignore_.end())
+		return true;
+	else
+		return false;
 }

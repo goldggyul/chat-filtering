@@ -17,7 +17,7 @@ public:
 
 	void AddLettersToIgnore(std::wstring letters_to_ignore)
 	{
-		Filter::SetLettersToIgnore(letters_to_ignore);
+		Filter::AddLettersToIgnore(letters_to_ignore);
 	}
 
 	std::wstring Filtering(const std::wstring& original_input);
