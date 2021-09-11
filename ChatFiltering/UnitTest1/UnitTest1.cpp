@@ -14,6 +14,7 @@ namespace UnitTest1
 		{
 			// 기본 필터링
 			Chat chat;
+			chat.AddFilter(L"강아지");
 			chat.AddFilter(L"puppy");
 
 			std::wstring output = chat.Filtering(L"강아지");
@@ -33,6 +34,7 @@ namespace UnitTest1
 		{
 			// 기본 필터링
 			Chat chat;
+			chat.AddFilter(L"강아지");
 			chat.AddFilter(L"puppy");
 			chat.AddFilter(L"dog");
 			chat.AddLettersToIgnore(L" ");
@@ -47,6 +49,7 @@ namespace UnitTest1
 		{
 			// 기본 필터링
 			Chat chat;
+			chat.AddFilter(L"강아지");
 			chat.AddFilter(L"puppy");
 			chat.AddFilter(L"dog");
 			chat.AddLettersToIgnore(L" ");
@@ -61,6 +64,7 @@ namespace UnitTest1
 		{
 			// 기본 필터링
 			Chat chat;
+			chat.AddFilter(L"강아지");
 			chat.AddFilter(L"puppy");
 			chat.AddFilter(L"dog");
 			chat.AddLettersToIgnore(L" ");

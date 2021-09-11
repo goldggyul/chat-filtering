@@ -1,61 +1,72 @@
 ﻿#include "Filter.h"
-#include<queue>
+#include <queue>
 
-void Filter::AddLettersToIgnore(std::wstring letters_to_ignore)
+// 입력 문자열의 필터링 해야 하는 범위[from,to]  
+struct FilterScope
 {
-	std::set<wchar_t>& letters_to_ignore_ = Filter::GetLettersToIgnore();
-	for (wchar_t letter : letters_to_ignore)
-		letters_to_ignore_.insert(letter);
-}
+	int from;
+	int to;
+};
 
-std::wstring Filter::Filtering(std::wstring input) {
-	std::queue<size_t> q;
-	for (size_t i = 0; i < input.length(); i++)
+std::wstring Filter::Filtering(const std::wstring& msg) {
+	std::queue<FilterScope> q;
+	for (auto i = 0; i < msg.length(); i++)
 	{
-		if (input[i] == word_[0])
+		if (msg[i] == text_[0])
 		{
-			int last_index = GetLastIndexIfReplaceable(input, i, 0, true, L'\0');
-			if (last_index == FAIL)
-				continue;
-			q.push(i);
-			q.push(last_index);
+			// 현재 문장에서부터 search, 아직 ignorable letter는 없음
+			int last_index = GetLastIndexToFilter(msg, i, 0, L'\0');
+			if (last_index != FAIL)
+				q.push(FilterScope{ i,last_index });
 		}
 	}
 
 	std::wstring output;
-	size_t first = 0;
+	int msg_start = 0;
 	while (!q.empty())
 	{
-		size_t last = q.front(); q.pop();
-		output.append(input.begin() + first, input.begin() + last);
-		output.append(word_.length(), REPLACEMENT_LETTER);
-		first = q.front() + 1; q.pop();
+		FilterScope filter_scope = q.front(); q.pop();
+		// { #1 | #2 | #3 } : #2는 대체 문자(*)로 필터링 되는 부분, #1과 #3은 그대로 출력되는 부분
+		int count = filter_scope.from - msg_start;
+		output.append(msg, msg_start, count); // #1
+		output.append(text_.length(), REPLACEMENT_LETTER); // #2
+		msg_start = filter_scope.to + 1;
 	}
-	output.append(input, first, input.length());
+	output.append(msg, msg_start, msg.length()); // #3
 	return output;
 }
 
-int Filter::GetLastIndexIfReplaceable(const std::wstring& input, int input_idx, int word_idx, bool isFirstCapture, wchar_t ignore_letter)
+// 현재 인덱스는 일치함, 다음 인덱스 검사 필요
+int Filter::GetLastIndexToFilter(const std::wstring& msg, int msg_idx, int text_idx, wchar_t ignorable_letter)
 {
-	if (word_idx == word_.length() - 1) // 마지막 단어 -> 즉 정답
-		return input_idx;
-	if (input_idx == input.length() - 1) // 입력 끝, 더 이상 못찾음
+	// match 성공
+	if (text_idx == text_.length() - 1)
+		return msg_idx;
+	// 더 이상 match 시도할 문자열이 없음
+	if (msg_idx == msg.length() - 1)
 		return FAIL;
-	if (word_[word_idx + 1] == input[input_idx + 1]) // 다음 글자 일치
-		return GetLastIndexIfReplaceable(input, input_idx + 1, word_idx + 1, isFirstCapture, ignore_letter);
-	if (IsIgnoreLetter(input[input_idx + 1]))
-		if (isFirstCapture)
-			return GetLastIndexIfReplaceable(input, input_idx + 1, word_idx, !isFirstCapture, input[input_idx + 1]);
-		else if (input[input_idx + 1] == ignore_letter)
-			return GetLastIndexIfReplaceable(input, input_idx + 1, word_idx, isFirstCapture, ignore_letter);
+
+	wchar_t next_text = text_[text_idx + 1LL];
+	wchar_t next_msg = msg[msg_idx + 1LL];
+
+	if (next_text == next_msg)
+		return GetLastIndexToFilter(msg, msg_idx + 1, text_idx + 1, ignorable_letter);
+	// 무시 문자 '후보'군에 있음
+	if (IsIgnorableLetter(next_msg))
+		// 무시 문자 처음 나와서 세팅
+		if (ignorable_letter == '\0')
+			return GetLastIndexToFilter(msg, msg_idx + 1, text_idx, next_msg);
+		// 무시 문자 세팅되어 있으며 + 일치함
+		else if (next_msg == ignorable_letter) 
+			return GetLastIndexToFilter(msg, msg_idx + 1, text_idx, ignorable_letter);
 	return FAIL;
 }
 
-bool Filter::IsIgnoreLetter(wchar_t letter)
+bool Filter::IsIgnorableLetter(wchar_t letter)
 {
-	std::set<wchar_t>& letters_to_ignore_ = Filter::GetLettersToIgnore();
-	auto it = letters_to_ignore_.find(letter);
-	if (it != letters_to_ignore_.end())
+	std::set<wchar_t>& ignorable_letters = Filter::GetIgnorableLetters();
+	auto it = ignorable_letters.find(letter);
+	if (it != ignorable_letters.end())
 		return true;
 	else
 		return false;

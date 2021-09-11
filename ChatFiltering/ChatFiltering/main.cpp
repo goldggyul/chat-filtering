@@ -8,6 +8,9 @@ int main()
 	
 	Chat chat;
 
+	// #1
+	chat.AddFilter(L"강아지");
+
 	// #2
 	chat.AddFilter(L"puppy");
 	chat.AddFilter(L"dog");
