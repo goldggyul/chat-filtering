@@ -16,7 +16,7 @@ std::wstring Filter::Filtering(std::wstring not_filtered){
 		{
 			filtered.append(match_result.prefix());
 			if (CanReplace(match_result))
-				filtered.append(filter_.length(), REPLACEMENT_LETTER);
+				filtered.append(word_.length(), REPLACEMENT_LETTER);
 			else
 				filtered.append(match_result.str());
 			not_filtered = match_result.suffix();
@@ -39,10 +39,10 @@ std::wstring Filter::GetExpressionForRegex()
 	// 무시할 문자들의 정규식: [!@#$%^&*\\s]*
 	// []안에 문자 중 하나가 0개 이상 있을 경우 match된다.
 	// 따라서 모두 다른 종류든 같은 종류든 위의 경우에 해당한다면 모두 match된다.
-	for (size_t f = 0; f < filter_.size(); f++)
+	for (size_t f = 0; f < word_.size(); f++)
 	{
-		expression.push_back(filter_[f]);
-		if (f == filter_.size() - 1)
+		expression.push_back(word_[f]);
+		if (f == word_.size() - 1)
 			break;
 		expression.append(expression_to_ignore);
 	}

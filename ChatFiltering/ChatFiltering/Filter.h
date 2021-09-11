@@ -7,7 +7,7 @@
 class Filter
 {
 public:
-	Filter(std::wstring filter) : filter_(filter) {}
+	Filter(std::wstring filter) : word_(filter) {}
 	static void SetLettersToIgnore(std::wstring letters_to_ignore)
 	{
 		letters_to_ignore_.append(letters_to_ignore);
@@ -24,6 +24,6 @@ private:
 	bool CanReplace(const std::wsmatch& m);
 	bool IsEveryLetterSame(const std::wstring& match_result);
 
-	std::wstring filter_;
+	std::wstring word_;
 };
 

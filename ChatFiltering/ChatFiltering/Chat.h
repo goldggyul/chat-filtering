@@ -10,9 +10,9 @@ public:
 		AddFilter(L"강아지");
 	}
 
-	void AddFilter(std::wstring filter)
+	void AddFilter(std::wstring word)
 	{
-		filters_.push_back(Filter(filter));
+		filters_.push_back(Filter(word));
 	}
 
 	void AddLettersToIgnore(std::wstring letters_to_ignore)
