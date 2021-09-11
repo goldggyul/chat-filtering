@@ -18,7 +18,6 @@ private:
 	static const wchar_t REPLACEMENT_LETTER = '*';
 	static std::wstring letters_to_ignore_;
 
-	std::wstring GetReplacementWord();
 	std::wstring GetExpressionForRegex();
 	std::wstring GetExpressionOfLettersToIgnore();
 

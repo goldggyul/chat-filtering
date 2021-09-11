@@ -3,7 +3,6 @@
 std::wstring Filter::letters_to_ignore_ = L"";
 
 std::wstring Filter::Filtering(std::wstring not_filtered){
-	std::wstring replacement_word = GetReplacementWord();
 	std::wstring expression = GetExpressionForRegex();
 	std::wstring filtered = L"";
 
@@ -17,7 +16,7 @@ std::wstring Filter::Filtering(std::wstring not_filtered){
 		{
 			filtered.append(match_result.prefix());
 			if (CanReplace(match_result))
-				filtered.append(replacement_word);
+				filtered.append(filter_.length(), REPLACEMENT_LETTER);
 			else
 				filtered.append(match_result.str());
 			not_filtered = match_result.suffix();
@@ -29,14 +28,6 @@ std::wstring Filter::Filtering(std::wstring not_filtered){
 		}
 	}
 	return filtered;
-}
-
-std::wstring Filter::GetReplacementWord()
-{
-	std::wstring replacement_word;
-	for (size_t f = 0; f < filter_.size(); f++)
-		replacement_word.push_back(REPLACEMENT_LETTER);
-	return replacement_word;
 }
 
 std::wstring Filter::GetExpressionForRegex()
