@@ -9,13 +9,23 @@ namespace UnitTest1
 {
 	TEST_CLASS(UnitTest1)
 	{
+	private:
+		Chat setting()
+		{
+			Chat chat;
+			chat.AddFilter(L"강아지");
+			chat.AddFilter(L"puppy");
+			chat.AddFilter(L"dog");
+			chat.AddLettersToIgnore(L" ");
+			chat.AddLettersToIgnore(L"!@#$%^&* ");
+			return chat;
+		}
+
 	public:
 		TEST_METHOD(TestMethod1)
 		{
 			// 기본 필터링
-			Chat chat;
-			chat.AddFilter(L"강아지");
-			chat.AddFilter(L"puppy");
+			Chat chat = setting();
 
 			std::wstring output = chat.Filtering(L"강아지");
 			std::wstring expected = L"***";
@@ -33,12 +43,7 @@ namespace UnitTest1
 		TEST_METHOD(TestMethod2)
 		{
 			// 기본 필터링
-			Chat chat;
-			chat.AddFilter(L"강아지");
-			chat.AddFilter(L"puppy");
-			chat.AddFilter(L"dog");
-			chat.AddLettersToIgnore(L" ");
-			chat.AddLettersToIgnore(L"!@#$%^&* ");
+			Chat chat = setting();
 
 			std::wstring output = chat.Filtering(L"강@아@지  p   upp    y 강 아@지 d  og d#o#g");
 			std::wstring expected = L"***  ***** 강 아@지 *** ***";
@@ -48,12 +53,7 @@ namespace UnitTest1
 		TEST_METHOD(TestMethod3)
 		{
 			// 기본 필터링
-			Chat chat;
-			chat.AddFilter(L"강아지");
-			chat.AddFilter(L"puppy");
-			chat.AddFilter(L"dog");
-			chat.AddLettersToIgnore(L" ");
-			chat.AddLettersToIgnore(L"!@#$%^&* ");
+			Chat chat = setting();
 
 			std::wstring output = chat.Filtering(L"강##아@@@지 !@#!#% p^^^^u@@pp!!y");
 			std::wstring expected = L"강##아@@@지 !@#!#% p^^^^u@@pp!!y";
@@ -63,17 +63,11 @@ namespace UnitTest1
 		TEST_METHOD(TestMethod4)
 		{
 			// 기본 필터링
-			Chat chat;
-			chat.AddFilter(L"강아지");
-			chat.AddFilter(L"puppy");
-			chat.AddFilter(L"dog");
-			chat.AddLettersToIgnore(L" ");
-			chat.AddLettersToIgnore(L"!@#$%^&* ");
+			Chat chat = setting();
 
 			std::wstring output = chat.Filtering(L"강##아@@@지 !@#!#% p^^^^u@@pp!!y 강@@아@@@지 ");
 			std::wstring expected = L"강##아@@@지 !@#!#% p^^^^u@@pp!!y *** ";
 			Assert::AreEqual(output, expected);
 		}
-
 	};
 }
