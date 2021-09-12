@@ -27,17 +27,21 @@ namespace UnitTest1
 			// 기본 필터링
 			Chat chat = setting();
 
-			std::wstring output = chat.Filtering(L"강아지");
-			std::wstring expected = L"***";
-			Assert::AreEqual(output, expected);
+			for (int i = 0; i < 100000; i++)
+			{
+				std::wstring output = chat.Filtering(L"강아지");
+				std::wstring expected = L"***";
+				Assert::AreEqual(output, expected);
 
-			output = chat.Filtering(L"puppy");
-			expected=L"*****";
-			Assert::AreEqual(output, expected);
+				output = chat.Filtering(L"puppy");
+				expected = L"*****";
+				Assert::AreEqual(output, expected);
 
-			output = chat.Filtering(L"저 강아지 좀 봐");
-			expected = L"저 *** 좀 봐";
-			Assert::AreEqual(output, expected);
+				output = chat.Filtering(L"저 강아지 좀 봐");
+				expected = L"저 *** 좀 봐";
+				Assert::AreEqual(output, expected);
+			}
+
 		}
 
 		TEST_METHOD(TestMethod2)
@@ -45,9 +49,13 @@ namespace UnitTest1
 			// 기본 필터링
 			Chat chat = setting();
 
-			std::wstring output = chat.Filtering(L"강@아@지  p   upp    y 강 아@지 d  og d#o#g");
-			std::wstring expected = L"***  ***** 강 아@지 *** ***";
-			Assert::AreEqual(output, expected);
+			for (int i = 0; i < 100000; i++)
+			{
+				std::wstring output = chat.Filtering(L"강@아@지  p   upp    y 강 아@지 d  og d#o#g");
+				std::wstring expected = L"***  ***** 강 아@지 *** ***";
+				Assert::AreEqual(output, expected);
+			}
+
 		}
 
 		TEST_METHOD(TestMethod3)
@@ -55,9 +63,13 @@ namespace UnitTest1
 			// 기본 필터링
 			Chat chat = setting();
 
-			std::wstring output = chat.Filtering(L"강##아@@@지 !@#!#% p^^^^u@@pp!!y");
-			std::wstring expected = L"강##아@@@지 !@#!#% p^^^^u@@pp!!y";
-			Assert::AreEqual(output, expected);
+			for (int i = 0; i < 100000; i++)
+			{
+				std::wstring output = chat.Filtering(L"강##아@@@지 !@#!#% p^^^^u@@pp!!y");
+				std::wstring expected = L"강##아@@@지 !@#!#% p^^^^u@@pp!!y";
+				Assert::AreEqual(output, expected);
+			}
+
 		}
 
 		TEST_METHOD(TestMethod4)
@@ -65,9 +77,13 @@ namespace UnitTest1
 			// 기본 필터링
 			Chat chat = setting();
 
-			std::wstring output = chat.Filtering(L"강##아@@@지 !@#!#% p^^^^u@@pp!!y 강@@아@@@지 ");
-			std::wstring expected = L"강##아@@@지 !@#!#% p^^^^u@@pp!!y *** ";
-			Assert::AreEqual(output, expected);
+			for (int i = 0; i < 100000; i++)
+			{
+				std::wstring output = chat.Filtering(L"강##아@@@지 !@#!#% p^^^^u@@pp!!y 강@@아@@@지 ");
+				std::wstring expected = L"강##아@@@지 !@#!#% p^^^^u@@pp!!y *** ";
+				Assert::AreEqual(output, expected);
+			}
+
 		}
 	};
 }
