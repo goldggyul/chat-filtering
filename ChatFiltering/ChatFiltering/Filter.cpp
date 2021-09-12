@@ -1,7 +1,7 @@
 ﻿#include "Filter.h"
 #include <queue>
 
-// 입력 문자열의 필터링 해야 하는 범위[from,to]  
+// 입력 문자열의 필터링 해야 하는 범위 [start,end]  
 struct FilterScope
 {
 	int start;
@@ -16,7 +16,10 @@ std::wstring Filter::Filtering(const std::wstring& msg) {
 		{
 			int last_index = GetLastIndexToFilter(msg, i, 0, L'\0');
 			if (last_index != FAIL)
+			{
 				q.push(FilterScope{ i,last_index });
+				i = last_index;
+			}
 		}
 	}
 
@@ -35,13 +38,28 @@ std::wstring Filter::Filtering(const std::wstring& msg) {
 	return output;
 }
 
-// 현재 인덱스는 일치함, 다음 인덱스 검사 필요
+/*
+	<재귀 함수>
+	현재 인덱스는 일치함, 다음 인덱스 검사 필요
+
+	F: 필터링 단어의 현재 인덱스 글자
+	I: 입력 문자열의 현재 인덱스 글자
+
+	1. 현재 완료 여부
+		1-1. 필터링 단어 마지막 글자 - 성공
+		1-2. 입력 문자열이 끝남 - 실패
+	2. 다음 문자 확인
+		2-1. F+1과 I+1이 동일
+		2-2. F+1이 공백,!,@,#,$,%,^,&,* 중 하나
+			위 문자 중 하나가 이미 한 번 쓰였는가?
+			1) 처음 쓰임
+			2) 이미 쓰임 - 쓰였던 문자와 위 문자와 동일
+	3. 그 외 - 실패
+*/
 int Filter::GetLastIndexToFilter(const std::wstring& msg, int msg_idx, int text_idx, wchar_t ignorable_letter)
 {
-	// match 성공
 	if (text_idx == text_.length() - 1)
-		return msg_idx;
-	// 더 이상 match 시도할 문자열이 없음
+		return msg_idx;	
 	if (msg_idx == msg.length() - 1)
 		return FAIL;
 
@@ -50,13 +68,11 @@ int Filter::GetLastIndexToFilter(const std::wstring& msg, int msg_idx, int text_
 
 	if (next_text == next_msg)
 		return GetLastIndexToFilter(msg, msg_idx + 1, text_idx + 1, ignorable_letter);
-	// 무시 문자 '후보'군에 있음
+
 	if (IsIgnorableLetter(next_msg))
-		// 무시 문자 처음 나와서 세팅
 		if (ignorable_letter == '\0')
 			return GetLastIndexToFilter(msg, msg_idx + 1, text_idx, next_msg);
-		// 무시 문자 세팅되어 있으며 + 일치함
-		else if (next_msg == ignorable_letter) 
+		else if (next_msg == ignorable_letter)
 			return GetLastIndexToFilter(msg, msg_idx + 1, text_idx, ignorable_letter);
 
 	return FAIL;
