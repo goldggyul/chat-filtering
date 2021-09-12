@@ -17,7 +17,7 @@ int main()
 	chat.AddLettersToIgnore(L" ");
 
 	// #2.5: !@#$%^&*(\s)
-	chat.AddLettersToIgnore(L"!@#$%^&* ");
+	chat.AddLettersToIgnore(L"!@#$%^&* \t");
 
 	std::wcout << L"q 입력 시 종료" << std::endl;
 	while (true)

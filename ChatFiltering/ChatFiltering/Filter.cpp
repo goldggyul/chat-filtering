@@ -4,8 +4,8 @@
 // 입력 문자열의 필터링 해야 하는 범위[from,to]  
 struct FilterScope
 {
-	int from;
-	int to;
+	int start;
+	int end;
 };
 
 std::wstring Filter::Filtering(const std::wstring& msg) {
@@ -14,7 +14,6 @@ std::wstring Filter::Filtering(const std::wstring& msg) {
 	{
 		if (msg[i] == text_[0])
 		{
-			// 현재 문장에서부터 search, 아직 ignorable letter는 없음
 			int last_index = GetLastIndexToFilter(msg, i, 0, L'\0');
 			if (last_index != FAIL)
 				q.push(FilterScope{ i,last_index });
@@ -27,10 +26,10 @@ std::wstring Filter::Filtering(const std::wstring& msg) {
 	{
 		FilterScope filter_scope = q.front(); q.pop();
 		// { #1 | #2 | #3 } : #2는 대체 문자(*)로 필터링 되는 부분, #1과 #3은 그대로 출력되는 부분
-		int count = filter_scope.from - msg_start;
+		int count = filter_scope.start - msg_start;
 		output.append(msg, msg_start, count); // #1
 		output.append(text_.length(), REPLACEMENT_LETTER); // #2
-		msg_start = filter_scope.to + 1;
+		msg_start = filter_scope.end + 1;
 	}
 	output.append(msg, msg_start, msg.length()); // #3
 	return output;
@@ -59,6 +58,7 @@ int Filter::GetLastIndexToFilter(const std::wstring& msg, int msg_idx, int text_
 		// 무시 문자 세팅되어 있으며 + 일치함
 		else if (next_msg == ignorable_letter) 
 			return GetLastIndexToFilter(msg, msg_idx + 1, text_idx, ignorable_letter);
+
 	return FAIL;
 }
 
