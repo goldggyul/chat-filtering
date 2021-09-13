@@ -5,10 +5,17 @@
 class Chat
 {
 public:
+	//~Chat()
+	//{
+	//	for (auto* handler : Handlers_)
+	//	{
+	//		delete(handler);
+	//	}
+	//}
 
 	void AddFilter(std::wstring word)
 	{
-		filters_.push_back(Filter(word));
+		Handlers_.push_back(new Filter(word));
 	}
 
 	void AddLettersToIgnore(const std::wstring& ignorable_letters)
@@ -19,13 +26,13 @@ public:
 	std::wstring DoChat(const std::wstring& original_msg);
 
 private:
-	std::list <Filter> filters_;
+	std::list<IHandler*> Handlers_;
 };
 
 std::wstring Chat::DoChat(const std::wstring& original_msg)
 {
 	std::wstring msg = original_msg;
-	for (Filter& filter : filters_)
-		msg = filter.DoFilter(msg);
+	for (IHandler* handler : Handlers_)
+		msg = handler->Process(msg);
 	return msg;
 }

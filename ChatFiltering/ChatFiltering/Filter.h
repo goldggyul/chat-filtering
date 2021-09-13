@@ -2,10 +2,11 @@
 #include <iostream>
 #include <string>
 #include <set>
+#include "IHandler.h"
 
 using uint = unsigned int;
 
-class Filter
+class Filter:public IHandler
 {
 public:
 	Filter(std::wstring text) : text_(text) {}
@@ -17,6 +18,7 @@ public:
 			ignorable_letters_.insert(letter);
 	}
 
+	std::wstring Process(const std::wstring& msg);
 	std::wstring DoFilter(const std::wstring& msg);
 
 private:

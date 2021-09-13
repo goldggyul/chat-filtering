@@ -8,6 +8,11 @@ struct FilterScope
 	uint end;
 };
 
+std::wstring Filter::Process(const std::wstring& msg)
+{
+	return DoFilter(msg);
+}
+
 std::wstring Filter::DoFilter(const std::wstring& msg) {
 	std::queue<FilterScope> q;
 	for (uint i = 0; i < msg.length(); i++)
@@ -69,8 +74,8 @@ uint Filter::_GetLastIndexToFilterImpl(const std::wstring& msg, uint msg_idx, ui
 	if (msg_idx == msg.length() - 1)
 		return FAIL;
 
-	wchar_t next_text = text_[text_idx + 1];
-	wchar_t next_msg = msg[msg_idx + 1];
+	wchar_t next_text = text_[text_idx + 1LL];
+	wchar_t next_msg = msg[msg_idx + 1LL];
 
 	if (next_text == next_msg)
 		return _GetLastIndexToFilterImpl(msg, msg_idx + 1, text_idx + 1, ignorable_letter);
