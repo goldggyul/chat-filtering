@@ -4,17 +4,17 @@
 // 입력 문자열의 필터링 해야 하는 범위 [start,end]  
 struct FilterScope
 {
-	int start;
-	int end;
+	uint start;
+	uint end;
 };
 
-std::wstring Filter::Filtering(const std::wstring& msg) {
+std::wstring Filter::DoFilter(const std::wstring& msg) {
 	std::queue<FilterScope> q;
-	for (auto i = 0; i < msg.length(); i++)
+	for (uint i = 0; i < msg.length(); i++)
 	{
 		if (msg[i] == text_[0])
 		{
-			int last_index = GetLastIndexToFilter(msg, i, 0, L'\0');
+			uint last_index = GetLastIndexToFilter(msg, i, 0, L'\0');
 			if (last_index != FAIL)
 			{
 				q.push(FilterScope{ i,last_index });
@@ -24,12 +24,12 @@ std::wstring Filter::Filtering(const std::wstring& msg) {
 	}
 
 	std::wstring output;
-	int msg_start = 0;
+	uint msg_start = 0;
 	while (!q.empty())
 	{
 		FilterScope filter_scope = q.front(); q.pop();
 		// { #1 | #2 | #3 } : #2는 대체 문자(*)로 필터링 되는 부분, #1과 #3은 그대로 출력되는 부분
-		int count = filter_scope.start - msg_start;
+		uint count = filter_scope.start - msg_start;
 		output.append(msg, msg_start, count); // #1
 		output.append(text_.length(), REPLACEMENT_LETTER); // #2
 		msg_start = filter_scope.end + 1;
@@ -56,15 +56,15 @@ std::wstring Filter::Filtering(const std::wstring& msg) {
 			2) 이미 쓰임 - 쓰였던 문자와 위 문자와 동일
 	3. 그 외 - 실패
 */
-int Filter::GetLastIndexToFilter(const std::wstring& msg, int msg_idx, int text_idx, wchar_t ignorable_letter)
+uint Filter::GetLastIndexToFilter(const std::wstring& msg, uint msg_idx, uint text_idx, wchar_t ignorable_letter)
 {
 	if (text_idx == text_.length() - 1)
 		return msg_idx;	
 	if (msg_idx == msg.length() - 1)
 		return FAIL;
 
-	wchar_t next_text = text_[text_idx + 1LL];
-	wchar_t next_msg = msg[msg_idx + 1LL];
+	wchar_t next_text = text_[text_idx + 1];
+	wchar_t next_msg = msg[msg_idx + 1];
 
 	if (next_text == next_msg)
 		return GetLastIndexToFilter(msg, msg_idx + 1, text_idx + 1, ignorable_letter);

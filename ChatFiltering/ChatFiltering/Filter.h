@@ -3,6 +3,8 @@
 #include <string>
 #include <set>
 
+using uint = unsigned int;
+
 class Filter
 {
 public:
@@ -15,7 +17,7 @@ public:
 			ignorable_letters_.insert(letter);
 	}
 
-	std::wstring Filtering(const std::wstring& msg);
+	std::wstring DoFilter(const std::wstring& msg);
 
 private:
 	static std::set<wchar_t>& GetIgnorableLetters()
@@ -24,9 +26,9 @@ private:
 		return *ignorable_letters;
 	}
 	static const wchar_t REPLACEMENT_LETTER = '*';
-	static const int FAIL = -1;
+	static const uint FAIL = 0xffffffff;
 
-	int GetLastIndexToFilter(const std::wstring& msg, int msg_idx, int word_idx, wchar_t ignorable_letter);
+	uint GetLastIndexToFilter(const std::wstring& msg, uint msg_idx, uint word_idx, wchar_t ignorable_letter);
 	bool IsIgnorableLetter(wchar_t letter);
 	std::wstring text_;
 };

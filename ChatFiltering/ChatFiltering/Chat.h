@@ -16,16 +16,16 @@ public:
 		Filter::AddLettersToIgnore(ignorable_letters);
 	}
 
-	std::wstring Filtering(const std::wstring& original_msg);
+	std::wstring DoChat(const std::wstring& original_msg);
 
 private:
 	std::list <Filter> filters_;
 };
 
-std::wstring Chat::Filtering(const std::wstring& original_msg)
+std::wstring Chat::DoChat(const std::wstring& original_msg)
 {
 	std::wstring msg = original_msg;
 	for (Filter& filter : filters_)
-		msg = filter.Filtering(msg);
+		msg = filter.DoFilter(msg);
 	return msg;
 }

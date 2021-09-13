@@ -29,7 +29,7 @@ int main()
 		if (input == L"q")
 			break;
 
-		std::wstring output = chat.Filtering(input);
+		std::wstring output = chat.DoChat(input);
 		std::wcout << L">> " << output << std::endl;
 	}
 	return 0;
