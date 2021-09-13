@@ -5,6 +5,7 @@
 class Chat
 {
 public:
+	//TODO
 	//~Chat()
 	//{
 	//	for (auto* handler : Handlers_)
@@ -12,10 +13,9 @@ public:
 	//		delete(handler);
 	//	}
 	//}
-
-	void AddFilter(std::wstring word)
+	void AddHandler(IHandler* handler)
 	{
-		Handlers_.push_back(new Filter(word));
+		Handlers_.push_back(handler);
 	}
 
 	void AddLettersToIgnore(const std::wstring& ignorable_letters)

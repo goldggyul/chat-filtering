@@ -2,9 +2,17 @@
 #include <iostream>
 #include <string>
 #include <set>
+#include <queue>
 #include "IHandler.h"
 
 using uint = unsigned int;
+
+// 입력 문자열의 필터링 해야 하는 범위 [start,end]  
+struct FilterScope
+{
+	uint start;
+	uint end;
+};
 
 class Filter:public IHandler
 {

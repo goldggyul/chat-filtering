@@ -4,7 +4,7 @@
 class IHandler
 {
 public:
-	//virtual ~IHandler() {};
+	//TODO virtual ~IHandler() {};
 	virtual std::wstring Process(const std::wstring& msg) = 0;
 };
 

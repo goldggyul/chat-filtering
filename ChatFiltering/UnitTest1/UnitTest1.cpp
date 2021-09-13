@@ -1,7 +1,8 @@
 ﻿#include "pch.h"
 #include "CppUnitTest.h"
-#include "../ChatFiltering/main.cpp"
+#include "../ChatFiltering/Chat.h"
 #include "../ChatFiltering/Filter.cpp"
+#include "../ChatFiltering/IHandler.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -13,9 +14,9 @@ namespace UnitTest1
 		Chat setting()
 		{
 			Chat chat;
-			chat.AddFilter(L"강아지");
-			chat.AddFilter(L"puppy");
-			chat.AddFilter(L"dog");
+			chat.AddHandler(new Filter(L"강아지"));
+			chat.AddHandler(new Filter(L"puppy"));
+			chat.AddHandler(new Filter(L"dog"));
 			chat.AddLettersToIgnore(L" ");
 			chat.AddLettersToIgnore(L"!@#$%^&* ");
 			return chat;

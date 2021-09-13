@@ -9,11 +9,11 @@ int main()
 	Chat chat;
 
 	// #1
-	chat.AddFilter(L"강아지");
+	chat.AddHandler(new Filter(L"강아지"));
 
 	// #2
-	chat.AddFilter(L"puppy");
-	chat.AddFilter(L"dog");
+	chat.AddHandler(new Filter(L"puppy"));
+	chat.AddHandler(new Filter(L"dog"));
 	chat.AddLettersToIgnore(L" ");
 
 	// #2.5: !@#$%^&*(\s)
