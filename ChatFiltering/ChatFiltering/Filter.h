@@ -10,7 +10,7 @@ class Filter
 public:
 	Filter(std::wstring text) : text_(text) {}
 
-	static void AddLettersToIgnore(std::wstring ignorable_letters)
+	static void AddLettersToIgnore(const std::wstring& ignorable_letters)
 	{
 		std::set<wchar_t>& ignorable_letters_ = Filter::GetIgnorableLetters();
 		for (wchar_t letter : ignorable_letters)
@@ -28,7 +28,8 @@ private:
 	static const wchar_t REPLACEMENT_LETTER = '*';
 	static const uint FAIL = 0xffffffff;
 
-	uint GetLastIndexToFilter(const std::wstring& msg, uint msg_idx, uint word_idx, wchar_t ignorable_letter);
+	uint GetLastIndexToFilter(const std::wstring& msg, uint msg_idx);
+	uint _GetLastIndexToFilterImpl(const std::wstring& msg, uint msg_idx, uint word_idx, wchar_t ignorable_letter);
 	bool IsIgnorableLetter(wchar_t letter);
 	std::wstring text_;
 };

@@ -14,7 +14,7 @@ std::wstring Filter::DoFilter(const std::wstring& msg) {
 	{
 		if (msg[i] == text_[0])
 		{
-			uint last_index = GetLastIndexToFilter(msg, i, 0, L'\0');
+			uint last_index = GetLastIndexToFilter(msg, i);
 			if (last_index != FAIL)
 			{
 				q.push(FilterScope{ i,last_index });
@@ -56,10 +56,16 @@ std::wstring Filter::DoFilter(const std::wstring& msg) {
 			2) 이미 쓰임 - 쓰였던 문자와 위 문자와 동일
 	3. 그 외 - 실패
 */
-uint Filter::GetLastIndexToFilter(const std::wstring& msg, uint msg_idx, uint text_idx, wchar_t ignorable_letter)
+uint Filter::GetLastIndexToFilter(const std::wstring& msg, uint msg_idx)
+{
+	return _GetLastIndexToFilterImpl(msg, msg_idx, 0, L'\0');
+}
+
+// GetLastIndexToFIlter함수를 통해서만 실행할 것
+uint Filter::_GetLastIndexToFilterImpl(const std::wstring& msg, uint msg_idx, uint text_idx, wchar_t ignorable_letter)
 {
 	if (text_idx == text_.length() - 1)
-		return msg_idx;	
+		return msg_idx;
 	if (msg_idx == msg.length() - 1)
 		return FAIL;
 
@@ -67,13 +73,13 @@ uint Filter::GetLastIndexToFilter(const std::wstring& msg, uint msg_idx, uint te
 	wchar_t next_msg = msg[msg_idx + 1];
 
 	if (next_text == next_msg)
-		return GetLastIndexToFilter(msg, msg_idx + 1, text_idx + 1, ignorable_letter);
+		return _GetLastIndexToFilterImpl(msg, msg_idx + 1, text_idx + 1, ignorable_letter);
 
 	if (IsIgnorableLetter(next_msg))
 		if (ignorable_letter == '\0')
-			return GetLastIndexToFilter(msg, msg_idx + 1, text_idx, next_msg);
+			return _GetLastIndexToFilterImpl(msg, msg_idx + 1, text_idx, next_msg);
 		else if (next_msg == ignorable_letter)
-			return GetLastIndexToFilter(msg, msg_idx + 1, text_idx, ignorable_letter);
+			return _GetLastIndexToFilterImpl(msg, msg_idx + 1, text_idx, ignorable_letter);
 
 	return FAIL;
 }

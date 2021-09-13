@@ -11,7 +11,7 @@ public:
 		filters_.push_back(Filter(word));
 	}
 
-	void AddLettersToIgnore(std::wstring ignorable_letters)
+	void AddLettersToIgnore(const std::wstring& ignorable_letters)
 	{
 		Filter::AddLettersToIgnore(ignorable_letters);
 	}
