@@ -14,10 +14,10 @@ int main()
 	// #2
 	chat.AddFilter(L"puppy");
 	chat.AddFilter(L"dog");
-	chat.AddLettersToIgnore(L"\\s");
+	chat.AddLettersToIgnore(L" ");
 
 	// #2.5: !@#$%^&*(\s)
-	chat.AddLettersToIgnore(L"!@#$%^&*\\s");
+	chat.AddLettersToIgnore(L"!@#$%^&* \t");
 
 	std::wcout << L"q 입력 시 종료" << std::endl;
 	while (true)

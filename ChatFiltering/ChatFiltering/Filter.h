@@ -1,30 +1,33 @@
 ﻿#pragma once
 #include <iostream>
 #include <string>
-#include <vector>
-#include <regex>
+#include <set>
 
 class Filter
 {
 public:
-	Filter(std::wstring filter) : filter_(filter) {}
-	static void SetLettersToIgnore(std::wstring letters_to_ignore)
+	Filter(std::wstring text) : text_(text) {}
+
+	static void AddLettersToIgnore(std::wstring ignorable_letters)
 	{
-		letters_to_ignore_.append(letters_to_ignore);
+		std::set<wchar_t>& ignorable_letters_ = Filter::GetIgnorableLetters();
+		for (wchar_t letter : ignorable_letters)
+			ignorable_letters_.insert(letter);
 	}
-	std::wstring Filtering(std::wstring input);
+
+	std::wstring Filtering(const std::wstring& msg);
 
 private:
+	static std::set<wchar_t>& GetIgnorableLetters()
+	{
+		static std::set<wchar_t>* ignorable_letters = new std::set<wchar_t>();
+		return *ignorable_letters;
+	}
 	static const wchar_t REPLACEMENT_LETTER = '*';
-	static std::wstring letters_to_ignore_;
+	static const int FAIL = -1;
 
-	std::wstring GetReplacementWord();
-	std::wstring GetExpressionForRegex();
-	std::wstring GetExpressionOfLettersToIgnore();
-
-	bool CanReplace(const std::wsmatch& m);
-	bool IsEveryLetterSame(const std::wstring& match_result);
-
-	std::wstring filter_;
+	int GetLastIndexToFilter(const std::wstring& msg, int msg_idx, int word_idx, wchar_t ignorable_letter);
+	bool IsIgnorableLetter(wchar_t letter);
+	std::wstring text_;
 };
 

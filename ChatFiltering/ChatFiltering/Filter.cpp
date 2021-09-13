@@ -1,84 +1,89 @@
 ﻿#include "Filter.h"
+#include <queue>
 
-std::wstring Filter::letters_to_ignore_ = L"";
+// 입력 문자열의 필터링 해야 하는 범위 [start,end]  
+struct FilterScope
+{
+	int start;
+	int end;
+};
 
-std::wstring Filter::Filtering(std::wstring not_filtered){
-	std::wstring replacement_word = GetReplacementWord();
-	std::wstring expression = GetExpressionForRegex();
-	std::wstring filtered = L"";
-
-	std::wsmatch match_result;
-	std::wregex rgx(expression);
-	// 정규식을 이용하여 더 이상 일치하지 않을 때까지 필터링
-	while (!not_filtered.empty())
+std::wstring Filter::Filtering(const std::wstring& msg) {
+	std::queue<FilterScope> q;
+	for (auto i = 0; i < msg.length(); i++)
 	{
-		bool is_matched = regex_search(not_filtered, match_result, rgx);
-		if (is_matched)
+		if (msg[i] == text_[0])
 		{
-			filtered.append(match_result.prefix());
-			if (CanReplace(match_result))
-				filtered.append(replacement_word);
-			else
-				filtered.append(match_result.str());
-			not_filtered = match_result.suffix();
-		}
-		else
-		{
-			filtered.append(not_filtered);
-			not_filtered = L"";
+			int last_index = GetLastIndexToFilter(msg, i, 0, L'\0');
+			if (last_index != FAIL)
+			{
+				q.push(FilterScope{ i,last_index });
+				i = last_index;
+			}
 		}
 	}
-	return filtered;
-}
 
-std::wstring Filter::GetReplacementWord()
-{
-	std::wstring replacement_word;
-	for (size_t f = 0; f < filter_.size(); f++)
-		replacement_word.push_back(REPLACEMENT_LETTER);
-	return replacement_word;
-}
-
-std::wstring Filter::GetExpressionForRegex()
-{
-	std::wstring expression_to_ignore = GetExpressionOfLettersToIgnore();
-	std::wstring expression;
-
-	// 필터링 단어의 글자 사이사이에 '무시할 문자들의 정규식'을 삽입하여 최종 정규식 생성
-	// 무시할 문자들의 정규식: [!@#$%^&*\\s]*
-	// []안에 문자 중 하나가 0개 이상 있을 경우 match된다.
-	// 따라서 모두 다른 종류든 같은 종류든 위의 경우에 해당한다면 모두 match된다.
-	for (size_t f = 0; f < filter_.size(); f++)
+	std::wstring output;
+	int msg_start = 0;
+	while (!q.empty())
 	{
-		expression.push_back(filter_[f]);
-		if (f == filter_.size() - 1)
-			break;
-		expression.append(expression_to_ignore);
+		FilterScope filter_scope = q.front(); q.pop();
+		// { #1 | #2 | #3 } : #2는 대체 문자(*)로 필터링 되는 부분, #1과 #3은 그대로 출력되는 부분
+		int count = filter_scope.start - msg_start;
+		output.append(msg, msg_start, count); // #1
+		output.append(text_.length(), REPLACEMENT_LETTER); // #2
+		msg_start = filter_scope.end + 1;
 	}
-	return expression;
+	output.append(msg, msg_start, msg.length()); // #3
+	return output;
 }
 
-std::wstring Filter::GetExpressionOfLettersToIgnore()
+/*
+	<재귀 함수>
+	현재 인덱스는 일치함, 다음 인덱스 검사 필요
+
+	F: 필터링 단어의 현재 인덱스 글자
+	I: 입력 문자열의 현재 인덱스 글자
+
+	1. 현재 완료 여부
+		1-1. 필터링 단어 마지막 글자 - 성공
+		1-2. 입력 문자열이 끝남 - 실패
+	2. 다음 문자 확인
+		2-1. F+1과 I+1이 동일
+		2-2. F+1이 공백,!,@,#,$,%,^,&,* 중 하나
+			위 문자 중 하나가 이미 한 번 쓰였는가?
+			1) 처음 쓰임
+			2) 이미 쓰임 - 쓰였던 문자와 위 문자와 동일
+	3. 그 외 - 실패
+*/
+int Filter::GetLastIndexToFilter(const std::wstring& msg, int msg_idx, int text_idx, wchar_t ignorable_letter)
 {
-	std::wstring expression;
-	expression.append(L"([");
-	expression.append(letters_to_ignore_);
-	expression.append(L"]*)");
-	return expression;
+	if (text_idx == text_.length() - 1)
+		return msg_idx;	
+	if (msg_idx == msg.length() - 1)
+		return FAIL;
+
+	wchar_t next_text = text_[text_idx + 1LL];
+	wchar_t next_msg = msg[msg_idx + 1LL];
+
+	if (next_text == next_msg)
+		return GetLastIndexToFilter(msg, msg_idx + 1, text_idx + 1, ignorable_letter);
+
+	if (IsIgnorableLetter(next_msg))
+		if (ignorable_letter == '\0')
+			return GetLastIndexToFilter(msg, msg_idx + 1, text_idx, next_msg);
+		else if (next_msg == ignorable_letter)
+			return GetLastIndexToFilter(msg, msg_idx + 1, text_idx, ignorable_letter);
+
+	return FAIL;
 }
 
-bool Filter::CanReplace(const std::wsmatch& m)
+bool Filter::IsIgnorableLetter(wchar_t letter)
 {
-	std::wstring match_result;
-	for (size_t i = 1; i < m.size(); i++)
-		match_result.append(m[i].str());
-	return IsEveryLetterSame(match_result);
-}
-
-bool Filter::IsEveryLetterSame(const std::wstring& match_result)
-{
-	for (size_t i = 1; i < match_result.size(); i++)
-		if (match_result[i] != match_result[i - 1])
-			return false;
-	return true;
+	std::set<wchar_t>& ignorable_letters = Filter::GetIgnorableLetters();
+	auto it = ignorable_letters.find(letter);
+	if (it != ignorable_letters.end())
+		return true;
+	else
+		return false;
 }

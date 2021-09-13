@@ -1,29 +1,31 @@
 ﻿#pragma once
 #include "Filter.h"
+#include <list>
 
 class Chat
 {
 public:
-	void AddFilter(std::wstring filter)
+
+	void AddFilter(std::wstring word)
 	{
-		filters_.push_back(Filter(filter));
+		filters_.push_back(Filter(word));
 	}
 
-	void AddLettersToIgnore(std::wstring letters_to_ignore)
+	void AddLettersToIgnore(std::wstring ignorable_letters)
 	{
-		Filter::SetLettersToIgnore(letters_to_ignore);
+		Filter::AddLettersToIgnore(ignorable_letters);
 	}
 
-	std::wstring Filtering(const std::wstring& original_input);
+	std::wstring Filtering(const std::wstring& original_msg);
 
 private:
-	std::vector<Filter> filters_;
+	std::list <Filter> filters_;
 };
 
-std::wstring Chat::Filtering(const std::wstring& original_input)
+std::wstring Chat::Filtering(const std::wstring& original_msg)
 {
-	std::wstring input = original_input;
+	std::wstring msg = original_msg;
 	for (Filter& filter : filters_)
-		input = filter.Filtering(input);
-	return input;
+		msg = filter.Filtering(msg);
+	return msg;
 }
