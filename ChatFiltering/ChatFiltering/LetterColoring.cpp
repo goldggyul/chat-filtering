@@ -7,17 +7,7 @@ std::wstring LetterColoring::Process(const std::wstring& msg)
 
 std::wstring LetterColoring::DoColoring(const std::wstring& msg)
 {
-	std::map<std::wstring, std::wstring>& color_codes = GetColorCodes();
-	std::wstring color_code;
-	
-	if (color_.empty())
-		color_code = color_codes[GetDefaultColor()];
-	else
-		if (color_codes.find(color_)==color_codes.end())
-			color_code = color_codes[L"white"];
-		else
-			color_code = color_codes[color_];
-
+	std::wstring color_code=GetColorCode();
 	std::wstring output;
 	size_t color_start = msg.find(text_);
 	size_t msg_start = 0;
@@ -34,4 +24,15 @@ std::wstring LetterColoring::DoColoring(const std::wstring& msg)
 	}
 	output.append(msg, msg_start, msg.length() - msg_start);
 	return output;
+}
+
+std::wstring LetterColoring::GetColorCode()
+{
+	std::map<std::wstring, std::wstring>& color_codes = GetColorCodes();
+	if (color_.empty())
+		return color_codes[GetDefaultColor()];
+	if (color_codes.find(color_) == color_codes.end())
+		return color_codes[L"white"];
+	else
+		return color_codes[color_];
 }
