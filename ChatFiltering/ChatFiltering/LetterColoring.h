@@ -4,8 +4,6 @@
 #include <iostream>
 #include "IHandler.h"
 
-using uint = unsigned int;
-
 class LetterColoring :public IHandler
 {
 public:

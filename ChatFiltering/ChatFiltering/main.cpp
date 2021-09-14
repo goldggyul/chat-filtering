@@ -8,12 +8,11 @@ Chat GetChat()
 
 	Filter::AddLettersToIgnore(L"!@#$%^&* \t");
 	chat.AddHandler(new Filter(L"강아지"));
-	chat.AddHandler(new Filter(L"puppy"));
-	chat.AddHandler(new Filter(L"dog"));
-
+	chat.AddHandler(new LetterColoring(L"cat", L"red"));
 	LetterColoring::SetDefaultColor(L"yellow");
 	chat.AddHandler(new LetterColoring(L"고양이"));
-	chat.AddHandler(new LetterColoring(L"cat", L"red"));
+	chat.AddHandler(new Filter(L"puppy"));
+	chat.AddHandler(new Filter(L"dog"));
 
 	return chat;
 }
