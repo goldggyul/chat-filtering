@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include <memory>
 #include <iostream>
 #include "IHandler.h"
 
@@ -37,7 +38,7 @@ private:
 	
 	static std::wstring& GetDefaultColor()
 	{
-		static std::wstring* default_color = new std::wstring(L"green");
+		static std::shared_ptr<std::wstring> default_color( new std::wstring(L"green") );
 		return *default_color;
 	}
 

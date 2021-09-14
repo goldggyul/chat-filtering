@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include <iostream>
+#include <memory>
 #include <string>
 #include <set>
 #include <queue>
@@ -31,7 +32,7 @@ public:
 private:
 	static std::set<wchar_t>& GetIgnorableLetters()
 	{
-		static std::set<wchar_t>* ignorable_letters = new std::set<wchar_t>();
+		static std::shared_ptr<std::set<wchar_t>> ignorable_letters( new std::set<wchar_t>() );
 		return *ignorable_letters;
 	}
 	static const wchar_t REPLACEMENT_LETTER = '*';
