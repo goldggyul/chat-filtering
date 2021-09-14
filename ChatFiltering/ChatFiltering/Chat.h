@@ -11,10 +11,6 @@ public:
 		Handlers_.push_back(std::shared_ptr<IHandler>(handler));
 	}
 
-	// BackColoring
-
-	// AutoCompletion
-
 	std::wstring DoChat(const std::wstring& original_msg);
 
 private:

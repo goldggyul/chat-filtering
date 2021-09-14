@@ -43,6 +43,8 @@ private:
 	}
 
 	std::wstring DoColoring(const std::wstring& msg);
+	std::wstring GetColorCode();
+
 	std::wstring text_;
 	std::wstring color_;
 };
