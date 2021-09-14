@@ -62,22 +62,32 @@ uint Filter::GetLastIndexToFilter(const std::wstring& msg, uint msg_idx)
 uint Filter::_GetLastIndexToFilterImpl(const std::wstring& msg, uint msg_idx, uint text_idx, wchar_t ignorable_letter)
 {
 	if (text_idx == text_.length() - 1)
+	{
 		return msg_idx;
+	}
 	if (msg_idx == msg.length() - 1)
+	{
 		return FAIL;
+	}
 
 	wchar_t next_text = text_[text_idx + 1LL];
 	wchar_t next_msg = msg[msg_idx + 1LL];
 
 	if (next_text == next_msg)
+	{
 		return _GetLastIndexToFilterImpl(msg, msg_idx + 1, text_idx + 1, ignorable_letter);
-
+	}
 	if (IsIgnorableLetter(next_msg))
+	{
 		if (ignorable_letter == '\0')
+		{
 			return _GetLastIndexToFilterImpl(msg, msg_idx + 1, text_idx, next_msg);
+		}
 		else if (next_msg == ignorable_letter)
+		{
 			return _GetLastIndexToFilterImpl(msg, msg_idx + 1, text_idx, ignorable_letter);
-
+		}
+	}
 	return FAIL;
 }
 
@@ -86,7 +96,11 @@ bool Filter::IsIgnorableLetter(wchar_t letter)
 	std::set<wchar_t>& ignorable_letters = Filter::GetIgnorableLetters();
 	auto it = ignorable_letters.find(letter);
 	if (it != ignorable_letters.end())
+	{
 		return true;
+	}
 	else
+	{
 		return false;
+	}
 }

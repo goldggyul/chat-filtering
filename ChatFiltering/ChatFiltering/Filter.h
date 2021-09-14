@@ -24,7 +24,9 @@ public:
 	{
 		std::set<wchar_t>& ignorable_letters_ = GetIgnorableLetters();
 		for (wchar_t letter : ignorable_letters)
+		{
 			ignorable_letters_.insert(letter);
+		}
 	}
 
 	std::wstring Process(const std::wstring& msg);

@@ -19,6 +19,7 @@ std::wstring LetterColoring::DoColoring(const std::wstring& msg)
 		output.append(color_code);
 		output.append(text_);
 		output.append(L"\033[0m"); 
+
 		msg_start = color_start + text_.length();
 		color_start = msg.find(text_, color_start + 1);
 	}
@@ -30,9 +31,15 @@ std::wstring LetterColoring::GetColorCode()
 {
 	std::map<std::wstring, std::wstring>& color_codes = GetColorCodes();
 	if (color_.empty())
+	{
 		return color_codes[GetDefaultColor()];
+	}
 	if (color_codes.find(color_) == color_codes.end())
+	{
 		return color_codes[L"white"];
+	}
 	else
+	{
 		return color_codes[color_];
+	}
 }
