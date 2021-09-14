@@ -2,6 +2,7 @@
 #include "CppUnitTest.h"
 #include "../ChatFiltering/main.cpp"
 #include "../ChatFiltering/Filter.cpp"
+#include "../ChatFiltering/LetterColoring.cpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -9,23 +10,11 @@ namespace UnitTest1
 {
 	TEST_CLASS(UnitTest1)
 	{
-	private:
-		Chat setting()
-		{
-			Chat chat;
-			chat.AddFilter(L"강아지");
-			chat.AddFilter(L"puppy");
-			chat.AddFilter(L"dog");
-			chat.AddLettersToIgnore(L" ");
-			chat.AddLettersToIgnore(L"!@#$%^&* ");
-			return chat;
-		}
-
 	public:
 		TEST_METHOD(TestMethod1)
 		{
 			// 기본 필터링
-			Chat chat = setting();
+			Chat chat = GetChat();
 
 			for (int i = 0; i < 100000; i++)
 			{
@@ -47,7 +36,7 @@ namespace UnitTest1
 		TEST_METHOD(TestMethod2)
 		{
 			// 기본 필터링
-			Chat chat = setting();
+			Chat chat = GetChat();
 
 			for (int i = 0; i < 100000; i++)
 			{
@@ -61,7 +50,7 @@ namespace UnitTest1
 		TEST_METHOD(TestMethod3)
 		{
 			// 기본 필터링
-			Chat chat = setting();
+			Chat chat = GetChat();
 
 			for (int i = 0; i < 100000; i++)
 			{
@@ -75,7 +64,7 @@ namespace UnitTest1
 		TEST_METHOD(TestMethod4)
 		{
 			// 기본 필터링
-			Chat chat = setting();
+			Chat chat = GetChat();
 
 			for (int i = 0; i < 100000; i++)
 			{

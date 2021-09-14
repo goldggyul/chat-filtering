@@ -1,31 +1,30 @@
 ﻿#pragma once
-#include "Filter.h"
+#include "IHandler.h"
+#include <memory>
 #include <list>
 
 class Chat
 {
 public:
-
-	void AddFilter(std::wstring word)
+	void AddHandler(IHandler* handler)
 	{
-		filters_.push_back(Filter(word));
+		Handlers_.push_back(std::shared_ptr<IHandler>(handler));
 	}
 
-	void AddLettersToIgnore(const std::wstring& ignorable_letters)
-	{
-		Filter::AddLettersToIgnore(ignorable_letters);
-	}
+	// BackColoring
+
+	// AutoCompletion
 
 	std::wstring DoChat(const std::wstring& original_msg);
 
 private:
-	std::list <Filter> filters_;
+	std::list<std::shared_ptr<IHandler>> Handlers_;
 };
 
 std::wstring Chat::DoChat(const std::wstring& original_msg)
 {
 	std::wstring msg = original_msg;
-	for (Filter& filter : filters_)
-		msg = filter.DoFilter(msg);
+	for (auto& handler : Handlers_)
+		msg = handler->Process(msg);
 	return msg;
 }

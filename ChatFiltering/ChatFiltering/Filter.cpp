@@ -1,12 +1,9 @@
 ﻿#include "Filter.h"
-#include <queue>
 
-// 입력 문자열의 필터링 해야 하는 범위 [start,end]  
-struct FilterScope
+std::wstring Filter::Process(const std::wstring& msg)
 {
-	uint start;
-	uint end;
-};
+	return DoFilter(msg);
+}
 
 std::wstring Filter::DoFilter(const std::wstring& msg) {
 	std::queue<FilterScope> q;
