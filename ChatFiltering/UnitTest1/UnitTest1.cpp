@@ -1,8 +1,8 @@
 ﻿#include "pch.h"
 #include "CppUnitTest.h"
 #include "../ChatFiltering/main.cpp"
-#include "../ChatFiltering/Filter.cpp"
-#include "../ChatFiltering/LetterColoring.cpp"
+#include "../ChatFiltering/FilterHandler.cpp"
+#include "../ChatFiltering/ColoringHandler.cpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

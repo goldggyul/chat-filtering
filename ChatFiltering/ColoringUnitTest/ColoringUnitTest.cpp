@@ -1,10 +1,8 @@
 #include "pch.h"
 #include "CppUnitTest.h"
-#include "../ChatFiltering/Chat.h"
-#include "../ChatFiltering/Filter.cpp"
-#include "../ChatFiltering/LetterColoring.cpp"
-#include "../ChatFiltering/IHandler.h"
 #include "../ChatFiltering/main.cpp"
+#include "../ChatFiltering/FilterHandler.cpp"
+#include "../ChatFiltering/ColoringHandler.cpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -15,10 +13,20 @@ namespace ColoringUnitTest
 	public:
 		TEST_METHOD(TestMethod1)
 		{
+			Chat chat;
+			FilterHandler* filter_handler = new FilterHandler;
+			filter_handler->AddFilter(L"강아지");
+			chat.AddHandler(filter_handler);
+
 			// default: yellow
 			// 고양이 -> default
 			// cat -> red
-			Chat chat = GetChat();
+			ColoringHandler* coloring_handler = new ColoringHandler;
+			coloring_handler->SetDefaultColor(L"yellow");
+			coloring_handler->AddText(L"고양이");
+			coloring_handler->AddTextAndColor(L"cat", L"red");
+
+			chat.AddHandler(coloring_handler);
 
 			std::wstring output = chat.DoChat(L"고양이");
 			std::wstring expected = L"\033[33m고양이\033[0m";
@@ -30,7 +38,7 @@ namespace ColoringUnitTest
 
 			for (int i = 0; i < 100000; i++)
 			{
-				LetterColoring::SetDefaultColor(L"green");
+				coloring_handler->SetDefaultColor(L"green");
 				std::wstring output = chat.DoChat(L"고양이");
 				std::wstring expected = L"\033[32m고양이\033[0m";
 				Assert::AreEqual(output, expected);
